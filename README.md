@@ -1,4 +1,4 @@
-# Our project title
+# RUBBER DUCK RACING
 Reinforcement Learning Project for RL2020@LUH
 
 ## Installation
