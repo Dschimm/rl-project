@@ -1,5 +1,6 @@
 # RUBBER DUCK RACING
 Reinforcement Learning Project for RL2020@LUH
+![rubberduck](images/racing_mascot.jpg)
 
 ## Installation
 
