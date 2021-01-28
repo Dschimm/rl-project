@@ -1,2 +1,4 @@
-pytorch
+torch
 numpy
+gym
+box2d
