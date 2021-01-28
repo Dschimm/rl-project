@@ -1,6 +1,6 @@
-# RUBBER DUCK RACING
+# 🏁🦆🏎️ RUBBER DUCK RACING 🏎️🦆🏁
 Reinforcement Learning Project for RL2020@LUH
-![rubberduck](images/racing_mascot.jpg)
+<img src="https://github.com/Dschimm/rl-project/blob/main/images/racing_mascot.jpg" width="250" height="250" align="right">
 
 ## Installation
 
