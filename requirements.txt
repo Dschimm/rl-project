@@ -1,4 +1,6 @@
 torch
 numpy
 gym
+gym[atari]
 box2d
+opencv-python

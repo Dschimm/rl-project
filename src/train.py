@@ -7,6 +7,7 @@ import numpy as np
 import random
 
 import gym
+from gym.wrappers.gray_scale_observation import GrayScaleObservation
 from collections import deque
 
 from policy import RandomPolicy
@@ -34,9 +35,9 @@ def train(env, model, policy, EPISODES=1000, EPISODE_LENGTH = 100, BATCH_SIZE = 
             replay_buffer.append((state, action, reward, done, next_state))
             
             if len(replay_buffer) >= BATCH_SIZE:
+                print("end batch")
                 batch = random.choices(replay_buffer, k=BATCH_SIZE)
-                vfa_update(zip(batch))
-                model.update(*zip(*vfa_update_data))
+                model.update(*zip(*batch))
             
             if done:
                 break
@@ -50,9 +51,9 @@ def train(env, model, policy, EPISODES=1000, EPISODE_LENGTH = 100, BATCH_SIZE = 
     return
 
 if __name__ == "__main__":
-    env = gym.make('CarRacing-v0')
+    env = GrayScaleObservation(gym.make('CarRacing-v0'))
+    print(np.prod(env.observation_space.shape))
     env.seed(42)
     dqn = DQN(env)
-    print("hey")
     policy = RandomPolicy(42)
     train(env, dqn, policy)
