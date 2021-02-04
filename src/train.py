@@ -15,6 +15,8 @@ from dqn import DQN
 
 
 from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_device
+from gym_utils import ActionWrapper
+
 
 
 def train(env, model, policy, EPISODES=1000, EPISODE_LENGTH = 100, BATCH_SIZE = 64):
@@ -35,7 +37,6 @@ def train(env, model, policy, EPISODES=1000, EPISODE_LENGTH = 100, BATCH_SIZE = 
             replay_buffer.append((state, action, reward, done, next_state))
             
             if len(replay_buffer) >= BATCH_SIZE:
-                print("end batch")
                 batch = random.choices(replay_buffer, k=BATCH_SIZE)
                 model.update(*zip(*batch))
             
@@ -51,8 +52,7 @@ def train(env, model, policy, EPISODES=1000, EPISODE_LENGTH = 100, BATCH_SIZE = 
     return
 
 if __name__ == "__main__":
-    env = GrayScaleObservation(gym.make('CarRacing-v0'))
-    print(np.prod(env.observation_space.shape))
+    env = ActionWrapper(GrayScaleObservation(gym.make('CarRacing-v0')))
     env.seed(42)
     dqn = DQN(env)
     policy = RandomPolicy(42)

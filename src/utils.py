@@ -42,3 +42,4 @@ def get_cuda_device():
     else:
         device = torch.device('cpu')
     return device
+

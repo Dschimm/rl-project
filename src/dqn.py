@@ -13,6 +13,7 @@ class DQN(nn.Module):
     def __init__(self, env):
         super(DQN, self).__init__()
         self.device = get_cuda_device()
+        self.discount = 0.9
         # env.observation space (0, 255, (96, 96, 3), uint8)
         # with atari preprocessing
         
@@ -20,7 +21,7 @@ class DQN(nn.Module):
         self.pool = nn.MaxPool2d(2,2) #40x40x6
         self.c2 = nn.Conv2d(in_channels=6, out_channels=4, kernel_size=8) #33x33x4
         self.fc1 = nn.Linear(16*16*4, 64)
-        self.fc2 = nn.Linear(64, env.action_space.shape[0])
+        self.fc2 = nn.Linear(64, env.action_space.n)
 
         self.relu = nn.ReLU()
         self.to(self.device)
@@ -49,10 +50,10 @@ class DQN(nn.Module):
                                 index=actions).squeeze().to(self.device)
     # FIX LEARNING AND OUTPUT OF NET
         target_q_values = rewards + \
-            (1 - dones) * DISCOUNT_FACTOR * \
+            (1 - dones) * self.discount * \
             self(next_states).max(dim=-1)[0].detach()
         loss = F.mse_loss(q_values, target_q_values)
 
         loss.backward()
-        optimizer.step()
+        self.optimizer.step()
         return loss.item()

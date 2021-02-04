@@ -6,10 +6,8 @@ class RandomPolicy():
         np.random.seed(seed)
 
     def action(self, state):
-        steering = np.random.uniform(-1, 1)
-        acc = np.random.uniform(0, 1)
-        brake = np.random.uniform(0, 1)
-        return [steering, acc, brake]
+        return 0
+        #return np.random.randint(9)
 
 class eGreedyPolicy():
 
