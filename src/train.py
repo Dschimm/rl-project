@@ -8,8 +8,8 @@ import random
 
 import gym
 from gym.wrappers.gray_scale_observation import GrayScaleObservation
-from collections import deque
 
+from buffer import ReplayBuffer, PrioritizedReplayBuffer
 from policy import RandomPolicy, eGreedyPolicy
 from dqn import DQN
 
@@ -22,8 +22,7 @@ from gym_utils import ActionWrapper
 def train(env, model, policy, EPISODES=1000, EPISODE_LENGTH = 200, BATCH_SIZE = 64):
     
     rewards = []
-    replay_buffer = deque(maxlen=int(1e5))
-    
+    replay_buffer = ReplayBuffer(42, batch_size=BATCH_SIZE)
     for i in range(EPISODES):
         state = env.reset()
         print("Episode", i)
@@ -39,7 +38,7 @@ def train(env, model, policy, EPISODES=1000, EPISODE_LENGTH = 200, BATCH_SIZE = 
             replay_buffer.append((state, action, reward, done, next_state))
             
             if len(replay_buffer) >= BATCH_SIZE:
-                batch = random.choices(replay_buffer, k=BATCH_SIZE)
+                batch = replay_buffer.get_sample()
                 model.update(*zip(*batch))
             
             if done:
@@ -50,7 +49,7 @@ def train(env, model, policy, EPISODES=1000, EPISODE_LENGTH = 200, BATCH_SIZE = 
             print("Mean reward:", np.mean(rewards))
             rewards.clear()
 
-    save_checkpoint(Q,"dqn")
+    save_checkpoint(model,"dqn")
     return
 
 if __name__ == "__main__":
@@ -59,4 +58,4 @@ if __name__ == "__main__":
     env.seed(seed)
     dqn = DQN(env)
     policy = eGreedyPolicy(env, seed, 0.1, dqn)
-    train(env, dqn, policy)
+    train(env, dqn, policy, EPISODES=10)
