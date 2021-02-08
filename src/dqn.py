@@ -38,22 +38,4 @@ class DQN(nn.Module):
         y = self.fc2(y)
         return y
 
-    def update(self, states, actions, rewards, dones, next_states):
-        self.optimizer.zero_grad()
-        states = torch.tensor(states).float().to(self.device)
-        actions = torch.tensor(actions).unsqueeze(-1).to(self.device)
-        rewards = torch.tensor(rewards).float().to(self.device)
-        dones = torch.tensor(dones).float().to(self.device)
-        next_states = torch.tensor(next_states).float().to(self.device)
 
-        q_values = torch.gather(self(states), dim=-1,
-                                index=actions).squeeze().to(self.device)
-    # FIX LEARNING AND OUTPUT OF NET
-        target_q_values = rewards + \
-            (1 - dones) * self.discount * \
-            self(next_states).max(dim=-1)[0].detach()
-        loss = F.mse_loss(q_values, target_q_values)
-
-        loss.backward()
-        self.optimizer.step()
-        return loss.item()

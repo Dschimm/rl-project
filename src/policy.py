@@ -9,6 +9,16 @@ class RandomPolicy():
     def action(self, state):
         return np.random.randint(9)
 
+class NoExplorationPolicy():
+
+    def __init__(self, model):
+        self.model = model
+           
+    def action(self, state):
+        state = torch.tensor(state).unsqueeze(0).float()
+        q_values = self.model(state)
+        return torch.max(q_values, dim=1)[1].item()
+
 class eGreedyPolicy():
 
     def __init__(self, env, seed, eps, model):
