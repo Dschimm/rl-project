@@ -7,6 +7,7 @@ import numpy as np
 import random
 
 import gym
+from gym.wrappers.frame_stack import FrameStack
 from gym.wrappers.gray_scale_observation import GrayScaleObservation
 
 from buffer import ReplayBuffer, PrioritizedReplayBuffer
@@ -20,7 +21,7 @@ from gym_utils import ActionWrapper
 
 
 
-def train(env, agent, EPISODES=1000, EPISODE_LENGTH = 200, BATCH_SIZE = 64):
+def train(env, agent, EPISODES=1000, EPISODE_LENGTH = 10000, BATCH_SIZE = 64):
     
     rewards = []
 
@@ -55,9 +56,11 @@ def train(env, agent, EPISODES=1000, EPISODE_LENGTH = 200, BATCH_SIZE = 64):
 if __name__ == "__main__":
     seed = 42
     env = ActionWrapper(GrayScaleObservation(gym.make('CarRacing-v0')))
+    env = FrameStack(env,4)
+    # TODO: warp frame
     env.seed(seed)
     dqn = DQN(env)
     policy = eGreedyPolicy(env, seed, 0.1, dqn)
-    buffer = ReplayBuffer(seed)
+    buffer = PrioritizedReplayBuffer(seed)
     agent = Agent(dqn, policy, buffer)
     train(env, agent, EPISODES=10)

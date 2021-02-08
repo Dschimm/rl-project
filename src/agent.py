@@ -34,11 +34,12 @@ class Agent():
             (1 - dones) * self.model.discount * \
             self.model(next_states).max(dim=-1)[0].detach()
         
+        targets = F.mse_loss(q_values, target_q_values, reduction='none').detach().numpy()
         loss = F.mse_loss(q_values, target_q_values)
 
         loss.backward()
         self.model.optimizer.step()
 
-        self.buffer.update_weights(loss)
+        self.buffer.update_weights(targets)
 
         return loss.item()
