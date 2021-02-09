@@ -1,17 +1,13 @@
-name: Black Check
+name: Lint
 
-# Run action on PRs to master
-on:
-  [push, pull_request]
+on: [push, pull_request]
 
 jobs:
-  suggest:
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so that black can inspect it
       - uses: actions/checkout@v2
-      - uses: rgasper/python-black-pull-request-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LINE_LENGTH: 88
+      - uses: actions/setup-python@v2
+      - uses: psf/black@stable
+        with:
+          black_args: ". --check"
