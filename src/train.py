@@ -7,6 +7,7 @@ import numpy as np
 import random
 
 import gym
+from gym.wrappers.resize_observation import ResizeObservation
 from gym.wrappers.frame_stack import FrameStack
 from gym.wrappers.gray_scale_observation import GrayScaleObservation
 
@@ -20,28 +21,28 @@ from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_d
 from gym_utils import ActionWrapper
 
 
+def train(env, agent, EPISODES=1000, EPISODE_LENGTH=10000, BATCH_SIZE=64):
 
-def train(env, agent, EPISODES=1000, EPISODE_LENGTH = 10000, BATCH_SIZE = 64):
-    
     rewards = []
-
+    frames = 0
     for i in range(EPISODES):
         state = env.reset()
         print("Episode", i)
-        for _ in range(EPISODE_LENGTH):  
-            #env.render()
+        for j in range(EPISODE_LENGTH):
+            # env.render()
             print(".", end="", flush=True)
             action = agent.act(state)
             next_state, reward, done, meta = env.step(action)
+            frames += 1
 
             rewards.append(reward)
             state = next_state
 
             agent.fill_buffer((state, action, reward, done, next_state))
-            
-            if len(agent.buffer) >= BATCH_SIZE:
+
+            if frames > 80000 and len(agent.buffer) >= BATCH_SIZE:
                 agent.update()
-            
+
             if done:
                 break
 
@@ -50,14 +51,15 @@ def train(env, agent, EPISODES=1000, EPISODE_LENGTH = 10000, BATCH_SIZE = 64):
             print("Mean reward:", np.mean(rewards))
             rewards.clear()
 
-    save_checkpoint(agent.model,"dqn")
+    save_checkpoint(agent.model, "dqn")
     return
+
 
 if __name__ == "__main__":
     seed = 42
-    env = ActionWrapper(GrayScaleObservation(gym.make('CarRacing-v0')))
-    env = FrameStack(env,4)
-    # TODO: warp frame
+    env = ResizeObservation(GrayScaleObservation(gym.make('CarRacing-v0')), 64)
+    env = ActionWrapper(env)
+    env = FrameStack(env, 4)
     env.seed(seed)
     dqn = DQN(env)
     policy = eGreedyPolicy(env, seed, 0.1, dqn)

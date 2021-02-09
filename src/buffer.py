@@ -15,19 +15,20 @@ class ReplayBuffer():
 
     def get_sample(self):
         return random.choices(self.queue, k=self.batch_size)
-    
+
     def update_weights(self, targets):
         return
 
     def __len__(self):
-        return len(self.queue)        
+        return len(self.queue)
+
 
 class PrioritizedReplayBuffer():
 
     def __init__(self, batch_size=64, size=1e5):
         self.max_size = size
         self.experience = list()
-        self.prios = list() 
+        self.prios = list()
         self.probs = list()
         self.batch_size = batch_size
 
@@ -46,14 +47,14 @@ class PrioritizedReplayBuffer():
 
     def get_sample(self):
         # sample according to priority
-        self.last_indices =np.random.choice(list(range(len(self.experience))), size=self.batch_size, replace=False, p=self.probs)
+        self.last_indices = np.random.choice(list(
+            range(len(self.experience))), size=self.batch_size, replace=False, p=self.probs)
         return [self.experience[i] for i in self.last_indices]
 
     def update_weights(self, targets):
-        print(self.last_indices)
         for i, t in enumerate(targets):
             self.prios[self.last_indices[i]] = t
-        
+
         self.compute_probs()
 
     def compute_probs(self):
@@ -61,4 +62,4 @@ class PrioritizedReplayBuffer():
         self.probs = [p/p_sum for p in self.prios]
 
     def __len__(self):
-        return len(self.experience)  
+        return len(self.experience)

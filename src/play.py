@@ -10,6 +10,7 @@ from agent import Agent
 
 from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_device
 
+
 def play(env, agent):
     done = False
     state = env.reset()
@@ -21,6 +22,7 @@ def play(env, agent):
 
         state = next_state
     return
+
 
 if __name__ == "__main__":
     seed = 42

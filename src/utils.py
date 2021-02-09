@@ -3,9 +3,12 @@ from time import sleep
 import os
 import torch
 
+
 def get_latest_model(prefix=""):
-    files = [f for f in os.listdir("models") if f.endswith("pt") and f.startswith(prefix)]
+    files = [f for f in os.listdir("models") if f.endswith(
+        "pt") and f.startswith(prefix)]
     return files[0]
+
 
 def save_checkpoint(model, name, overwrite=False):
     if overwrite:
@@ -42,4 +45,3 @@ def get_cuda_device():
     else:
         device = torch.device('cpu')
     return device
-

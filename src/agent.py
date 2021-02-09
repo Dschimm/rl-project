@@ -11,7 +11,7 @@ class Agent():
 
     def act(self, state):
         return self.policy.action(state)
-    
+
     def fill_buffer(self, episode):
         self.buffer.append(episode)
 
@@ -33,8 +33,9 @@ class Agent():
         target_q_values = rewards + \
             (1 - dones) * self.model.discount * \
             self.model(next_states).max(dim=-1)[0].detach()
-        
-        targets = F.mse_loss(q_values, target_q_values, reduction='none').detach().numpy()
+
+        targets = F.mse_loss(q_values, target_q_values,
+                             reduction='none').detach().numpy()
         loss = F.mse_loss(q_values, target_q_values)
 
         loss.backward()
