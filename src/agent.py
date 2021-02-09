@@ -2,8 +2,7 @@ import torch
 import torch.nn.functional as F
 
 
-class Agent():
-
+class Agent:
     def __init__(self, model, policy, buffer):
         self.model = model
         self.policy = policy
@@ -27,15 +26,20 @@ class Agent():
         dones = torch.tensor(dones).float().to(self.model.device)
         next_states = torch.tensor(next_states).float().to(self.model.device)
 
-        q_values = torch.gather(self.model(states), dim=-1,
-                                index=actions).squeeze().to(self.model.device)
+        q_values = (
+            torch.gather(self.model(states), dim=-1, index=actions)
+            .squeeze()
+            .to(self.model.device)
+        )
 
-        target_q_values = rewards + \
-            (1 - dones) * self.model.discount * \
-            self.model(next_states).max(dim=-1)[0].detach()
+        target_q_values = (
+            rewards
+            + (1 - dones)
+            * self.model.discount
+            * self.model(next_states).max(dim=-1)[0].detach()
+        )
 
-        targets = F.mse_loss(q_values, target_q_values,
-                             reduction='none').detach().numpy()
+        targets = F.mse_loss(q_values, target_q_values, reduction="none").detach().numpy()
         loss = F.mse_loss(q_values, target_q_values)
 
         loss.backward()

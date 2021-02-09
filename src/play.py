@@ -1,14 +1,12 @@
 import os
 import gym
-from gym.wrappers.gray_scale_observation import GrayScaleObservation
-from gym_utils import ActionWrapper
 
-from buffer import ReplayBuffer, PrioritizedReplayBuffer
 from policy import NoExplorationPolicy
 from dqn import DQN
 from agent import Agent
 
-from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_device
+from utils import get_latest_model, load_checkpoint
+from gym_utils import getWrappedEnv
 
 
 def play(env, agent):
@@ -26,8 +24,7 @@ def play(env, agent):
 
 if __name__ == "__main__":
     seed = 42
-    env = ActionWrapper(GrayScaleObservation(gym.make('CarRacing-v0')))
-    env.seed(seed)
+    env = getWrappedEnv(seed=seed)
     dqn = DQN(env)
     load_checkpoint(dqn, get_latest_model(prefix="dqn"), dqn.device)
     policy = NoExplorationPolicy(dqn)

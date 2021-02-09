@@ -1,6 +1,10 @@
 import gym
 from gym.spaces.discrete import Discrete
 
+from gym.wrappers.resize_observation import ResizeObservation
+from gym.wrappers.frame_stack import FrameStack
+from gym.wrappers.gray_scale_observation import GrayScaleObservation
+
 # [steering, acc, brake]
 # [(-1,1), (0,1), (0,1)]
 
@@ -23,3 +27,13 @@ class ActionWrapper(gym.ActionWrapper):
 
     def action(self, i):
         return self.actions[i]
+
+
+def getWrappedEnv(name="CarRacing-v0", seed=42):
+    env = gym.make(name)
+    env = GrayScaleObservation(env)
+    env = ResizeObservation(env, 64)
+    env = ActionWrapper(env)
+    env = FrameStack(env, 4)
+    env.seed(seed)
+    return env

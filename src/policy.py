@@ -2,8 +2,7 @@ import numpy as np
 import torch
 
 
-class RandomPolicy():
-
+class RandomPolicy:
     def __init__(self, seed=None):
         np.random.seed(seed)
 
@@ -11,8 +10,7 @@ class RandomPolicy():
         return np.random.randint(9)
 
 
-class NoExplorationPolicy():
-
+class NoExplorationPolicy:
     def __init__(self, model):
         self.model = model
 
@@ -22,8 +20,7 @@ class NoExplorationPolicy():
         return torch.max(q_values, dim=1)[1].item()
 
 
-class eGreedyPolicy():
-
+class eGreedyPolicy:
     def __init__(self, env, seed, eps, model):
         self.eps = eps
         np.random.seed(seed)
