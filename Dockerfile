@@ -1,6 +1,6 @@
 FROM pytorch/pytorch
 
-RUN apt update && apt install -y git nano python3-pip\
+RUN apt update && apt install -y git nano python3-pip swig\
 && rm -rf /var/lib/apt/lists/*
 
 # Setup folder structure

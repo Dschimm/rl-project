@@ -6,18 +6,20 @@ import torch.nn.functional as F
 import numpy as np
 import random
 
+import pickle
+
 import gym
 
 from buffer import ReplayBuffer, PrioritizedReplayBuffer
 from policy import RandomPolicy, eGreedyPolicy
 from dqn import DQN
-from agent import Agent
+from agent import Agent, DDQNAgent
 
 from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_device
 from gym_utils import getWrappedEnv
 
 
-def train(env, agent, EPISODES=1000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BATCH_SIZE=64):
+def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BATCH_SIZE=64):
 
     rewards = []
     frames = 0
@@ -37,6 +39,8 @@ def train(env, agent, EPISODES=1000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BA
             agent.fill_buffer((state, action, reward, done, next_state))
 
             if frames > SKIP_FRAMES and len(agent.buffer) >= BATCH_SIZE:
+                with open("../models/buffer.pkl", "wb+") as f:
+                    pickle.dump(agent.buffer, f)
                 agent.update()
 
             if done:
@@ -48,6 +52,7 @@ def train(env, agent, EPISODES=1000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BA
             rewards.clear()
 
     save_checkpoint(agent.model, "dqn")
+    print(frames)
     return
 
 
@@ -55,7 +60,8 @@ if __name__ == "__main__":
     seed = 42
     env = getWrappedEnv(seed=seed)
     dqn = DQN(env)
+    eval_net = DQN(env)
     policy = eGreedyPolicy(env, seed, 0.1, dqn)
     buffer = PrioritizedReplayBuffer(seed)
-    agent = Agent(dqn, policy, buffer)
-    train(env, agent, EPISODES=10)
+    agent = DDQNAgent(dqn, eval_net, policy, buffer)
+    train(env, agent)
