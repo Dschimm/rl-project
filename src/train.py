@@ -46,8 +46,8 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
             if done:
                 break
 
-        if i % 100 == 0:
-            print(i)
+        if i % 25 == 0:
+            print("Frames: ",frames)
             print("Mean reward:", np.mean(rewards))
             rewards.clear()
 
