@@ -37,10 +37,12 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
             state = next_state
 
             agent.fill_buffer((state, action, reward, done, next_state))
-
-            if frames > SKIP_FRAMES and len(agent.buffer) >= BATCH_SIZE:
-                with open("../models/buffer.pkl", "wb+") as f:
+            """
+            if frames % 10000 == 0:
+                with open("models/buffer" + str(frames + 40000) + ".pkl", "wb+") as f:
                     pickle.dump(agent.buffer, f)
+            """
+            if frames > SKIP_FRAMES and len(agent.buffer) >= BATCH_SIZE:
                 agent.update()
 
             if done:
@@ -64,4 +66,6 @@ if __name__ == "__main__":
     policy = eGreedyPolicy(env, seed, 0.1, dqn)
     buffer = PrioritizedReplayBuffer(seed)
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
+    with open('models/buffer80000.pkl', 'rb') as f:
+        agent.buffer = pickle.load(f)
     train(env, agent)
