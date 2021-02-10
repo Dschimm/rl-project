@@ -1,11 +1,11 @@
 FROM pytorch/pytorch
 
-RUN apt update && apt install -y git nano python3-pip swig\
+RUN apt update && apt install -y git nano python3-pip swig python-opengl xvfb xserver-xephyr fontconfig\
 && rm -rf /var/lib/apt/lists/*
 
 # Setup folder structure
 RUN mkdir /RLProject
-# COPY src/ /RLProject
+COPY . /RLProject
 
 # Setup dependencies
 WORKDIR /RLProject
