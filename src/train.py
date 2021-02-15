@@ -12,7 +12,7 @@ import gym
 
 from buffer import ReplayBuffer, PrioritizedReplayBuffer
 from policy import RandomPolicy, eGreedyPolicy
-from dqn import DQN
+from dqn import DQN, DuelingDQN
 from agent import Agent, DDQNAgent
 
 from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_device
@@ -61,8 +61,8 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
 if __name__ == "__main__":
     seed = 42
     env = getWrappedEnv(seed=seed)
-    dqn = DQN(env)
-    eval_net = DQN(env)
+    dqn = DuelingDQN(env)
+    eval_net = DuelingDQN(env)
     policy = eGreedyPolicy(env, seed, 0.1, dqn)
     buffer = PrioritizedReplayBuffer(seed)
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
