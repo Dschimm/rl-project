@@ -66,6 +66,6 @@ if __name__ == "__main__":
     policy = eGreedyPolicy(env, seed, 0.1, dqn)
     buffer = PrioritizedReplayBuffer(seed)
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
-    #with open('models/buffer80000.pkl', 'rb') as f:
-        #agent.buffer = pickle.load(f)
-    train(env, agent)
+    with open('models/buffer80000.pkl', 'rb') as f:
+        agent.buffer = pickle.load(f)
+    train(env, agent, SKIP_FRAMES=10)

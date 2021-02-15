@@ -65,36 +65,33 @@ class DDQNAgent:
         self.buffer.append(episode)
 
     def sync_nets(self, tau=0.01):
-        actor_weights = self.actor_model.get_weights()
-        eval_weights = self.target_network.get_weights()
-
-        for i, (q_weight, target_weight) in enumerate(zip(actor_weights, eval_weights)):
-            target_weight = target_weight * (1 - TAU) + q_weight * TAU
-            eval_weights[i] = target_weight
-        self.target_network.set_weights(eval_weights)
+        for target_param, local_param in zip(
+            self.eval_model.parameters(), self.actor_model.parameters()
+        ):
+            target_param.data.copy_(tau * local_param.data + (1 - tau) * target_param.data)
 
     def update(self):
         batch = self.buffer.get_sample()
         states, actions, rewards, dones, next_states = zip(*batch)
 
-        self.model.optimizer.zero_grad()
+        self.actor_model.optimizer.zero_grad()
 
-        states = torch.tensor(states).float().to(self.model.device)
-        actions = torch.tensor(actions).unsqueeze(-1).to(self.model.device)
-        rewards = torch.tensor(rewards).float().to(self.model.device)
-        dones = torch.tensor(dones).float().to(self.model.device)
-        next_states = torch.tensor(next_states).float().to(self.model.device)
+        states = torch.tensor(states).float().to(self.actor_model.device)
+        actions = torch.tensor(actions).unsqueeze(-1).to(self.actor_model.device)
+        rewards = torch.tensor(rewards).float().to(self.actor_model.device)
+        dones = torch.tensor(dones).float().to(self.actor_model.device)
+        next_states = torch.tensor(next_states).float().to(self.actor_model.device)
 
         q_values = (
             torch.gather(self.actor_model(states), dim=-1, index=actions)
             .squeeze()
-            .to(self.model.device)
+            .to(self.actor_model.device)
         )
 
         target_q_values = (
             rewards
             + (1 - dones)
-            * self.model.discount
+            * self.actor_model.discount
             * self.eval_model(next_states).max(dim=-1)[0].detach()
         )
 
@@ -102,9 +99,10 @@ class DDQNAgent:
         loss = F.mse_loss(q_values, target_q_values)
 
         loss.backward()
-        self.model.optimizer.step()
+        self.actor_model.optimizer.step()
 
         self.buffer.update_weights(targets)
+        self.updates += 1
         if self.updates % 10 == 0:
             self.sync_nets()
 
