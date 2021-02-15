@@ -1,4 +1,4 @@
-FROM pytorch/pytorch
+FROM ubuntu:20.04
 
 RUN apt update && apt install -y git nano python3-pip swig python-opengl xvfb xserver-xephyr fontconfig libc6 \
 && rm -rf /var/lib/apt/lists/*

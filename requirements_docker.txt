@@ -2,3 +2,4 @@ numpy
 gym
 box2d
 gym[atari]
+pytorch
