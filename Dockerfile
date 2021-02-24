@@ -5,8 +5,8 @@ RUN apt update && apt install -y git nano python3-pip swig python-opengl xvfb xs
 
 # Setup folder structure
 RUN mkdir /RLProject
-COPY . /RLProject
+ADD requirements_docker.txt /RLProject
 
 # Setup dependencies
 WORKDIR /RLProject
-RUN pip install -r requirements_docker.txt
+RUN pip3 install -r requirements_docker.txt
