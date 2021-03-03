@@ -8,7 +8,7 @@ from utils import get_cuda_device
 
 
 class DQN(nn.Module):
-    def __init__(self, env):
+    def __init__(self, env, lr=0.01):
         super(DQN, self).__init__()
         self.device = get_cuda_device()
         self.discount = 0.9
@@ -25,7 +25,7 @@ class DQN(nn.Module):
         self.relu = nn.ReLU()
         self.to(self.device)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=0.01)
+        self.optimizer = optim.Adam(self.parameters(), lr=lr)
 
     def forward(self, x):
         # [batch_size, channel_size, height, width]
@@ -42,7 +42,7 @@ class DQN(nn.Module):
 
 class DuelingDQN(nn.Module):
     # estimates Value function
-    def __init__(self, env):
+    def __init__(self, env, lr=0.01):
         super(DuelingDQN, self).__init__()
         self.device = get_cuda_device()
         self.discount = 0.9
@@ -61,7 +61,7 @@ class DuelingDQN(nn.Module):
         self.relu = nn.ReLU()
         self.to(self.device)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=0.01)
+        self.optimizer = optim.Adam(self.parameters(), lr=lr)
 
     def forward(self, x):
         # [batch_size, channel_size, height, width]

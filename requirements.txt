@@ -4,3 +4,4 @@ gym
 gym[atari]
 box2d
 opencv-python
+tensorboard

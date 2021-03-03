@@ -18,10 +18,21 @@ from agent import Agent, DDQNAgent
 from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_device
 from gym_utils import getWrappedEnv
 
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
 # from pyvirtualdisplay import Display
 
 # display = Display(visible=0, size=(1400, 900))
 # display.start()
+
+seeds = [
+    42,
+    366,
+    533,
+    1337,
+]
+
+learning_rates = [0.01, 0.001]
 
 
 def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BATCH_SIZE=64):
@@ -37,7 +48,7 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
             print(".", end="", flush=True)
             action = agent.act(state)
             next_state, reward, done, meta = env.step(action)
-            frames += 1
+            frames += 4 # frameskipping
 
             rewards.append(reward)
             rewards100.append(reward)
@@ -56,6 +67,8 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
                 break
 
         if i % 1 == 0:
+            writer.add_scalar("MeanReward", np.mean(rewards), i)
+
             print("Frames:", frames)
             print("Mean reward:", np.mean(rewards))
             save_checkpoint(
@@ -84,13 +97,16 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
 
 
 if __name__ == "__main__":
-    seed = 42
-    env = getWrappedEnv(seed=seed)
-    dqn = DuelingDQN(env)
-    eval_net = DuelingDQN(env)
-    policy = eGreedyPolicy(env, seed, 0.1, dqn)
-    buffer = PrioritizedReplayBuffer(seed)
-    agent = DDQNAgent(dqn, eval_net, policy, buffer)
     with open("models/buffer80000.pkl", "rb") as f:
-        agent.buffer = pickle.load(f)
-    train(env, agent, SKIP_FRAMES=10)
+        preloaded_buffer = pickle.load(f)
+
+    for seed in seeds:
+        env = getWrappedEnv(seed=seed)
+
+        dqn = DuelingDQN(env)
+        eval_net = DuelingDQN(env)
+        policy = eGreedyPolicy(env, seed, 0.1, dqn)
+        buffer = PrioritizedReplayBuffer(seed)
+        agent = DDQNAgent(dqn, eval_net, policy, buffer)
+        agent.buffer = preloaded_buffer
+        train(env, agent, SKIP_FRAMES=10)
