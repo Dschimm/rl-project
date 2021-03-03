@@ -102,9 +102,10 @@ if __name__ == "__main__":
 
     for seed in seeds:
         env = getWrappedEnv(seed=seed)
-
         dqn = DuelingDQN(env)
         eval_net = DuelingDQN(env)
+        write.add_graph(dqn)
+
         policy = eGreedyPolicy(env, seed, 0.1, dqn)
         buffer = PrioritizedReplayBuffer(seed)
         agent = DDQNAgent(dqn, eval_net, policy, buffer)
