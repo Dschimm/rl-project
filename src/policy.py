@@ -30,6 +30,6 @@ class eGreedyPolicy:
     def action(self, state):
         if np.random.uniform(0, 1) < self.eps:
             return self.env.action_space.sample()
-        state = torch.tensor(state).unsqueeze(0).float()
+        state = torch.tensor(state).unsqueeze(0).float().to(self.model.device)
         q_values = self.model(state)
         return torch.max(q_values, dim=1)[1].item()

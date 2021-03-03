@@ -39,7 +39,7 @@ class Agent:
             * self.model(next_states).max(dim=-1)[0].detach()
         )
 
-        targets = F.mse_loss(q_values, target_q_values, reduction="none").detach().numpy()
+        targets = F.mse_loss(q_values, target_q_values, reduction="none").cpu().detach().numpy()
         loss = F.mse_loss(q_values, target_q_values)
 
         loss.backward()

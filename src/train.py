@@ -18,10 +18,16 @@ from agent import Agent, DDQNAgent
 from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_device
 from gym_utils import getWrappedEnv
 
+# from pyvirtualdisplay import Display
+
+# display = Display(visible=0, size=(1400, 900))
+# display.start()
+
 
 def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BATCH_SIZE=64):
 
     rewards = []
+    rewards100 = []
     frames = 0
     for i in range(EPISODES):
         state = env.reset()
@@ -34,6 +40,7 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
             frames += 1
 
             rewards.append(reward)
+            rewards100.append(reward)
             state = next_state
 
             agent.fill_buffer((state, action, reward, done, next_state))
@@ -48,10 +55,28 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
             if done:
                 break
 
-        if i % 25 == 0:
-            print("Frames: ",frames)
+        if i % 1 == 0:
+            print("Frames:", frames)
             print("Mean reward:", np.mean(rewards))
+            save_checkpoint(
+                agent.actor_model,
+                "Duelingddqn",
+                frames=frames,
+                mean_reward=np.mean(rewards),
+                overwrite=True,
+            )
             rewards.clear()
+
+        if i % 2 == 0:
+            print("Frames:", frames)
+            print("Mean reward:", np.mean(rewards100))
+            save_checkpoint(
+                agent.actor_model,
+                "Duelingddqn_" + str(i),
+                frames=frames,
+                mean_reward=np.mean(rewards100),
+            )
+            rewards100.clear()
 
     save_checkpoint(agent.model, "dqn")
     print(frames)
@@ -66,6 +91,6 @@ if __name__ == "__main__":
     policy = eGreedyPolicy(env, seed, 0.1, dqn)
     buffer = PrioritizedReplayBuffer(seed)
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
-    with open('models/buffer80000.pkl', 'rb') as f:
+    with open("models/buffer80000.pkl", "rb") as f:
         agent.buffer = pickle.load(f)
     train(env, agent, SKIP_FRAMES=10)
