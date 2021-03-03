@@ -19,7 +19,7 @@ from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_d
 from gym_utils import getWrappedEnv
 
 from torch.utils.tensorboard import SummaryWriter
-writer = SummaryWriter()
+from datetime import datetime
 # from pyvirtualdisplay import Display
 
 # display = Display(visible=0, size=(1400, 900))
@@ -35,7 +35,7 @@ seeds = [
 learning_rates = [0.01, 0.001]
 
 
-def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BATCH_SIZE=64):
+def train(env, agent, seed, SAVE_DIR="models/", EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BATCH_SIZE=64):
 
     rewards = []
     rewards100 = []
@@ -68,15 +68,16 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
 
         if i % 1 == 0:
             writer.add_scalar("MeanReward", np.mean(rewards), i)
-
+            writer.flush()
             print("Frames:", frames)
             print("Mean reward:", np.mean(rewards))
             save_checkpoint(
                 agent.actor_model,
-                "Duelingddqn",
+                "Duelingddqn_seed_" + str(seed),
                 frames=frames,
                 mean_reward=np.mean(rewards),
                 overwrite=True,
+                loc=SAVE_DIR
             )
             rewards.clear()
 
@@ -85,13 +86,14 @@ def train(env, agent, EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, B
             print("Mean reward:", np.mean(rewards100))
             save_checkpoint(
                 agent.actor_model,
-                "Duelingddqn_" + str(i),
+                "Duelingddqn_seed_" + str(seed) + "_EPISODE_" + str(i),
                 frames=frames,
                 mean_reward=np.mean(rewards100),
+                loc=SAVE_DIR
             )
             rewards100.clear()
 
-    save_checkpoint(agent.model, "dqn")
+    #save_checkpoint(agent.model, "dqn")
     print(frames)
     return
 
@@ -100,14 +102,22 @@ if __name__ == "__main__":
     with open("models/buffer80000.pkl", "rb") as f:
         preloaded_buffer = pickle.load(f)
 
+    now = datetime.now()
+    hm = now.strftime("%H%M%S")
+
+    savedir = "models/" + "train_" + hm + "/"
+    os.mkdir(savedir)
     for seed in seeds:
+        writer = SummaryWriter(log_dir=savedir,comment=str(seed))
+
         env = getWrappedEnv(seed=seed)
         dqn = DuelingDQN(env)
         eval_net = DuelingDQN(env)
-        write.add_graph(dqn)
+        writer.add_graph(dqn, torch.tensor(env.reset()).unsqueeze(0).float().to(dqn.device))
 
         policy = eGreedyPolicy(env, seed, 0.1, dqn)
         buffer = PrioritizedReplayBuffer(seed)
         agent = DDQNAgent(dqn, eval_net, policy, buffer)
         agent.buffer = preloaded_buffer
-        train(env, agent, SKIP_FRAMES=10)
+        train(env, agent, seed, SAVE_DIR=savedir, EPISODES=100, SKIP_FRAMES=10, EPISODE_LENGTH=20)
+        writer.close()

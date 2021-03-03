@@ -9,9 +9,9 @@ def get_latest_model(prefix=""):
     return files[0]
 
 
-def save_checkpoint(model, name, frames=0, mean_reward=0, overwrite=False):
+def save_checkpoint(model, name, frames=0, mean_reward=0, overwrite=False, loc="models/"):
     if overwrite:
-        torch.save({"model_state_dict": model.state_dict()}, "models/" + name + ".pt")
+        torch.save({"model_state_dict": model.state_dict()}, loc + name + ".pt")
         return
     now = datetime.now()
     hm = now.strftime("%H%M%S")
@@ -21,7 +21,7 @@ def save_checkpoint(model, name, frames=0, mean_reward=0, overwrite=False):
             "mean_reward": mean_reward,
             "frames": frames,
         },
-        "models/" + name + "_" + hm + ".pt",
+        loc + name + "_" + hm + ".pt",
     )
 
 
