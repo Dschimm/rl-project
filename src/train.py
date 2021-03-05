@@ -20,10 +20,10 @@ from gym_utils import getWrappedEnv
 
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
-# from pyvirtualdisplay import Display
+from pyvirtualdisplay import Display
 
-# display = Display(visible=0, size=(1400, 900))
-# display.start()
+display = Display(visible=0, size=(1400, 900))
+display.start()
 
 seeds = [
     42,
