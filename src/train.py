@@ -119,5 +119,5 @@ if __name__ == "__main__":
         buffer = PrioritizedReplayBuffer(seed)
         agent = DDQNAgent(dqn, eval_net, policy, buffer)
         agent.buffer = preloaded_buffer
-        train(env, agent, seed, SAVE_DIR=savedir, EPISODES=100, SKIP_FRAMES=10, EPISODE_LENGTH=20)
+        train(env, agent, seed, SAVE_DIR=savedir, EPISODES=100, SKIP_FRAMES=10)
         writer.close()
