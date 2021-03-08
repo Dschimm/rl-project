@@ -13,7 +13,7 @@ import argparse
 import gym
 
 from buffer import ReplayBuffer, PrioritizedReplayBuffer
-from policy import RandomPolicy, eGreedyPolicy
+from policy import RandomPolicy, eGreedyPolicy, eGreedyPolicyDecay
 from dqn import DQN, DuelingDQN
 from agent import Agent, DDQNAgent
 
@@ -46,7 +46,7 @@ seeds = [
 learning_rates = [0.01, 0.1]
 
 
-def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=0.1):
+def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=1):
     if weights:
         checkpoint = torch.load(weights)
         env = getWrappedEnv(seed=checkpoint["info"]["seed"])
@@ -56,7 +56,7 @@ def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=0.1):
         load_checkpoint(dqn, weights, dqn.device)
         load_checkpoint(eval_net, weights, dqn.device)
 
-        policy = eGreedyPolicy(env, seed, checkpoint["info"]["er"], dqn)
+        policy = eGreedyPolicyDecay(env, seed, checkpoint["info"]["er"], er, 0.1, 25e4, dqn)
         buffer = PrioritizedReplayBuffer(seed)
         agent = DDQNAgent(dqn, eval_net, policy, buffer)
         agent.buffer = pre_buffer
@@ -73,7 +73,7 @@ def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=0.1):
     dqn = DuelingDQN(env, lr=lr)
     eval_net = DuelingDQN(env)
 
-    policy = eGreedyPolicy(env, seed, er, dqn)
+    policy = eGreedyPolicyDecay(env, seed, er, er, 0.1, 25e4, dqn)
     buffer = PrioritizedReplayBuffer(seed)
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
     agent.buffer = pre_buffer
@@ -108,6 +108,7 @@ def train(
             agent.fill_buffer((state, action, reward, done, next_state))
             if frames > SKIP_FRAMES and len(agent.buffer) >= BATCH_SIZE:
                 loss = agent.update()
+                agent.policy.decay_eps()
                 losses.append(loss)
 
             if done:

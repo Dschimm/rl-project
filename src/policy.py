@@ -33,3 +33,15 @@ class eGreedyPolicy:
         state = torch.tensor(state).unsqueeze(0).float().to(self.model.device)
         q_values = self.model(state)
         return torch.max(q_values, dim=1)[1].item()
+
+
+class eGreedyPolicyDecay(eGreedyPolicy):
+    def __init__(self, env, seed, eps, eps_start, eps_end, decay_steps, model):
+        super(eGreedyPolicyDecay, self).__init__(env, seed, eps, model)
+        self.decay = (eps_start - eps_end) / decay_steps
+        self.eps_end = eps_end
+
+    def decay_eps(self):
+        print("decay from", self.eps, "to", self.eps-self.decay)
+        if self.eps > self.eps_end:
+            self.eps -= self.decay
