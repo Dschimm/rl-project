@@ -5,10 +5,10 @@ import pickle
 from train import train, assemble_training
 from play import assemble_play, play
 
-from pyvirtualdisplay import Display
+# from pyvirtualdisplay import Display
 
-display = Display(visible=0, size=(1400, 900))
-display.start()
+# display = Display(visible=0, size=(1400, 900))
+# display.start()
 
 parser = argparse.ArgumentParser(description="")
 parser.add_argument("-t", help="Training mode.", action='store_true')
