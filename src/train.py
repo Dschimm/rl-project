@@ -109,9 +109,9 @@ def train(
                 break
 
         if i % 1 == 0:
-            writer.add_scalar("MeanReward", np.mean(rewards))
-            writer.add_scalar("Frames", frames)
-            writer.add_scalar("Loss", np.mean(losses))
+            writer.add_scalar("MeanReward", np.mean(rewards), i)
+            writer.add_scalar("Frames", frames, i)
+            writer.add_scalar("Loss", np.mean(losses), i)
             writer.flush()
             losses.clear()
             rewards.clear()
