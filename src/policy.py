@@ -15,7 +15,7 @@ class NoExplorationPolicy:
         self.model = model
 
     def action(self, state):
-        state = torch.tensor(state).unsqueeze(0).float()
+        state = torch.tensor(state).unsqueeze(0).float().to(self.model.device)
         q_values = self.model(state)
         return torch.max(q_values, dim=1)[1].item()
 

@@ -23,18 +23,6 @@ from gym_utils import getWrappedEnv
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 from tqdm import tqdm
-from pyvirtualdisplay import Display
-
-display = Display(visible=0, size=(1400, 900))
-display.start()
-
-
-parser = argparse.ArgumentParser(description="")
-parser.add_argument("--weights", help="Checkpoint from which to resume training.")
-parser.add_argument("--dir", help="Checkpoint directory.")
-parser.add_argument("--seed", help="Random seed.")
-parser.add_argument("--buffer", help="Buffer checkpoint.")
-
 
 seeds = [
     42,
@@ -42,9 +30,6 @@ seeds = [
     533,
     1337,
 ]
-
-learning_rates = [0.01, 0.1]
-
 
 def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=1):
     if weights:
@@ -92,6 +77,13 @@ def train(
     OFFSET_EP=0,
     OFFSET_FR=0,
 ):
+
+    writer = SummaryWriter(log_dir=SAVE_DIR, comment=str(seed))
+    writer.add_graph(
+        agent.actor_model,
+        torch.tensor(env.reset()).unsqueeze(0).float().to(agent.actor_model.device),
+    )
+
     losses = []
     rewards = []
     frames = OFFSET_FR
@@ -108,6 +100,7 @@ def train(
             agent.fill_buffer((state, action, reward, done, next_state))
             if frames > SKIP_FRAMES and len(agent.buffer) >= BATCH_SIZE:
                 loss = agent.update()
+                agent.sync_nets()
                 agent.policy.decay_eps()
                 losses.append(loss)
 
@@ -137,48 +130,5 @@ def train(
             )
             with open(os.path.join(SAVE_DIR, "buffer_seed_" + str(seed) + ".pkl"), "wb") as f:
                 pickle.dump(agent.buffer, f)
-
-    return
-
-
-if __name__ == "__main__":
-    args = parser.parse_args()
-    if args.seed:
-        seed = int(args.seed)
-    else:
-        seed = 0
-
-    save_dir = os.path.join("models", args.dir)
-    if not os.path.isdir(save_dir):
-        print("Create directory", save_dir)
-        os.mkdir(save_dir)
-    print("Checkpoints and buffer will be saved into", save_dir)
-
-    if not args.buffer:
-        buffer_dir = "models/buffer80000.pkl"
-    else:
-        buffer_dir = os.path.join("models", args.buffer)
-    if os.path.exists(buffer_dir):
-        print("Loading", buffer_dir)
-        with open(buffer_dir, "rb") as f:
-            preloaded_buffer = pickle.load(f)
-
-    env, agent, episodes, frames = assemble_training(seed, preloaded_buffer, args.weights)
-    writer = SummaryWriter(log_dir=save_dir, comment=str(seed))
-    writer.add_graph(
-        agent.actor_model,
-        torch.tensor(env.reset()).unsqueeze(0).float().to(agent.actor_model.device),
-    )
-
-    train(
-        env,
-        agent,
-        seed,
-        SAVE_DIR=save_dir,
-        EPISODES=100,
-        EPISODE_LENGTH=3,
-        SKIP_FRAMES=10,
-        OFFSET_EP=episodes,
-        OFFSET_FR=frames,
-    )
     writer.close()
+    return
