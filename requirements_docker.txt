@@ -1,6 +1,0 @@
-numpy
-gym
-box2d
-gym[atari]
-torch
-tensorboard

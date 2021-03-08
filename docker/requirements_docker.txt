@@ -1,0 +1,9 @@
+torch
+numpy
+gym
+gym[atari]
+box2d
+opencv-python-headless
+tensorboard
+tqdm
+pyvirtualdisplay
