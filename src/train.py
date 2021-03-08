@@ -31,7 +31,8 @@ seeds = [
     1337,
 ]
 
-def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=1):
+
+def assemble_training(seed, weights=None, lr=0.01, er=1):
     if weights:
         checkpoint = torch.load(weights)
         env = getWrappedEnv(seed=checkpoint["info"]["seed"])
@@ -42,9 +43,11 @@ def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=1):
         load_checkpoint(eval_net, weights, dqn.device)
 
         policy = eGreedyPolicyDecay(env, seed, checkpoint["info"]["er"], er, 0.1, 25e4, dqn)
-        buffer = PrioritizedReplayBuffer(seed)
+        buffer = PrioritizedReplayBuffer()
         agent = DDQNAgent(dqn, eval_net, policy, buffer)
-        agent.buffer = pre_buffer
+        with open(checkpoint["info"]["buffer"], "rb") as f:
+            preloaded_buffer = pickle.load(f)
+        agent.buffer = preloaded_buffer
         print(
             "Resume training at Episode",
             checkpoint["info"]["episodes"],
@@ -59,9 +62,8 @@ def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=1):
     eval_net = DuelingDQN(env)
 
     policy = eGreedyPolicyDecay(env, seed, er, er, 0.1, 25e4, dqn)
-    buffer = PrioritizedReplayBuffer(seed)
+    buffer = PrioritizedReplayBuffer()
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
-    agent.buffer = pre_buffer
     return env, agent, 0, 0
 
 
@@ -73,7 +75,6 @@ def train(
     EPISODES=10000,
     EPISODE_LENGTH=10000,
     SKIP_FRAMES=80000,
-    BATCH_SIZE=64,
     OFFSET_EP=0,
     OFFSET_FR=0,
 ):
@@ -98,7 +99,7 @@ def train(
             state = next_state
 
             agent.fill_buffer((state, action, reward, done, next_state))
-            if frames > SKIP_FRAMES and len(agent.buffer) >= BATCH_SIZE:
+            if frames > SKIP_FRAMES:
                 loss = agent.update()
                 agent.sync_nets()
                 agent.policy.decay_eps()
@@ -108,14 +109,15 @@ def train(
                 break
 
         if i % 1 == 0:
-            writer.add_scalar("MeanReward", np.mean(rewards))
-            writer.add_scalar("Frames", frames)
-            writer.add_scalar("Loss", np.mean(losses))
+            writer.add_scalar("MeanReward", np.mean(rewards), i)
+            writer.add_scalar("Frames", frames, i)
+            writer.add_scalar("Loss", np.mean(losses), i)
             writer.flush()
             losses.clear()
             rewards.clear()
 
-        if i % 9 == 0:
+        if (i + 1) % 10 == 0:
+            buffer_dir = os.path.join(SAVE_DIR, "buffer_seed_" + str(seed) + ".pkl")
             save_checkpoint(
                 agent.actor_model,
                 "Duelingddqn_seed_" + str(seed) + "_EPISODE_" + str(i + 1),
@@ -126,9 +128,10 @@ def train(
                     "er": agent.policy.eps,
                     "episodes": i,
                     "frames": frames,
+                    "buffer": buffer_dir,
                 },
             )
-            with open(os.path.join(SAVE_DIR, "buffer_seed_" + str(seed) + ".pkl"), "wb") as f:
+            with open(buffer_dir, "wb") as f:
                 pickle.dump(agent.buffer, f)
     writer.close()
     return

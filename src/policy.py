@@ -42,6 +42,5 @@ class eGreedyPolicyDecay(eGreedyPolicy):
         self.eps_end = eps_end
 
     def decay_eps(self):
-        print("decay from", self.eps, "to", self.eps-self.decay)
         if self.eps > self.eps_end:
             self.eps -= self.decay

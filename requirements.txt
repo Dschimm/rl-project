@@ -6,3 +6,4 @@ box2d
 opencv-python
 tensorboard
 tqdm
+pyvirtualdisplay
