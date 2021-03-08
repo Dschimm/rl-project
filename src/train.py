@@ -1,4 +1,5 @@
 import os
+import sys
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -7,11 +8,12 @@ import numpy as np
 import random
 
 import pickle
+import argparse
 
 import gym
 
 from buffer import ReplayBuffer, PrioritizedReplayBuffer
-from policy import RandomPolicy, eGreedyPolicy
+from policy import RandomPolicy, eGreedyPolicy, eGreedyPolicyDecay
 from dqn import DQN, DuelingDQN
 from agent import Agent, DDQNAgent
 
@@ -20,10 +22,7 @@ from gym_utils import getWrappedEnv
 
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
-# from pyvirtualdisplay import Display
-
-# display = Display(visible=0, size=(1400, 900))
-# display.start()
+from tqdm import tqdm
 
 seeds = [
     42,
@@ -32,92 +31,104 @@ seeds = [
     1337,
 ]
 
-learning_rates = [0.01, 0.001]
+def assemble_training(seed, pre_buffer, weights=None, lr=0.01, er=1):
+    if weights:
+        checkpoint = torch.load(weights)
+        env = getWrappedEnv(seed=checkpoint["info"]["seed"])
+        dqn = DuelingDQN(env, lr=lr)
+        eval_net = DuelingDQN(env)
+
+        load_checkpoint(dqn, weights, dqn.device)
+        load_checkpoint(eval_net, weights, dqn.device)
+
+        policy = eGreedyPolicyDecay(env, seed, checkpoint["info"]["er"], er, 0.1, 25e4, dqn)
+        buffer = PrioritizedReplayBuffer(seed)
+        agent = DDQNAgent(dqn, eval_net, policy, buffer)
+        agent.buffer = pre_buffer
+        print(
+            "Resume training at Episode",
+            checkpoint["info"]["episodes"],
+            "after",
+            checkpoint["info"]["frames"],
+            "frames.",
+        )
+        return env, agent, checkpoint["info"]["episodes"], checkpoint["info"]["frames"]
+
+    env = getWrappedEnv(seed=seed)
+    dqn = DuelingDQN(env, lr=lr)
+    eval_net = DuelingDQN(env)
+
+    policy = eGreedyPolicyDecay(env, seed, er, er, 0.1, 25e4, dqn)
+    buffer = PrioritizedReplayBuffer(seed)
+    agent = DDQNAgent(dqn, eval_net, policy, buffer)
+    agent.buffer = pre_buffer
+    return env, agent, 0, 0
 
 
-def train(env, agent, seed, SAVE_DIR="models/", EPISODES=10000, EPISODE_LENGTH=10000, SKIP_FRAMES=80000, BATCH_SIZE=64):
+def train(
+    env,
+    agent,
+    seed,
+    SAVE_DIR="models/",
+    EPISODES=10000,
+    EPISODE_LENGTH=10000,
+    SKIP_FRAMES=80000,
+    BATCH_SIZE=64,
+    OFFSET_EP=0,
+    OFFSET_FR=0,
+):
 
+    writer = SummaryWriter(log_dir=SAVE_DIR, comment=str(seed))
+    writer.add_graph(
+        agent.actor_model,
+        torch.tensor(env.reset()).unsqueeze(0).float().to(agent.actor_model.device),
+    )
+
+    losses = []
     rewards = []
-    rewards100 = []
-    frames = 0
-    for i in range(EPISODES):
+    frames = OFFSET_FR
+    for i in tqdm(range(OFFSET_EP, EPISODES + OFFSET_EP), desc="Episodes"):
         state = env.reset()
-        print("Episode", i)
-        for j in range(EPISODE_LENGTH):
-            # env.render()
-            print(".", end="", flush=True)
+        for j in tqdm(range(EPISODE_LENGTH), desc="Episode length"):
             action = agent.act(state)
             next_state, reward, done, meta = env.step(action)
-            frames += 4 # frameskipping
+            frames += 4  # frame stacking
 
             rewards.append(reward)
-            rewards100.append(reward)
             state = next_state
 
             agent.fill_buffer((state, action, reward, done, next_state))
-            """
-            if frames % 10000 == 0:
-                with open("models/buffer" + str(frames + 40000) + ".pkl", "wb+") as f:
-                    pickle.dump(agent.buffer, f)
-            """
             if frames > SKIP_FRAMES and len(agent.buffer) >= BATCH_SIZE:
-                agent.update()
+                loss = agent.update()
+                agent.sync_nets()
+                agent.policy.decay_eps()
+                losses.append(loss)
 
             if done:
                 break
 
         if i % 1 == 0:
-            writer.add_scalar("MeanReward", np.mean(rewards), i)
+            writer.add_scalar("MeanReward", np.mean(rewards))
+            writer.add_scalar("Frames", frames)
+            writer.add_scalar("Loss", np.mean(losses))
             writer.flush()
-            print("Frames:", frames)
-            print("Mean reward:", np.mean(rewards))
-            save_checkpoint(
-                agent.actor_model,
-                "Duelingddqn_seed_" + str(seed),
-                frames=frames,
-                mean_reward=np.mean(rewards),
-                overwrite=True,
-                loc=SAVE_DIR
-            )
+            losses.clear()
             rewards.clear()
 
-        if i % 2 == 0:
-            print("Frames:", frames)
-            print("Mean reward:", np.mean(rewards100))
+        if i % 9 == 0:
             save_checkpoint(
                 agent.actor_model,
-                "Duelingddqn_seed_" + str(seed) + "_EPISODE_" + str(i),
-                frames=frames,
-                mean_reward=np.mean(rewards100),
-                loc=SAVE_DIR
+                "Duelingddqn_seed_" + str(seed) + "_EPISODE_" + str(i + 1),
+                loc=SAVE_DIR,
+                info={
+                    "seed": seed,
+                    "lr": agent.actor_model.lr,
+                    "er": agent.policy.eps,
+                    "episodes": i,
+                    "frames": frames,
+                },
             )
-            rewards100.clear()
-
-    #save_checkpoint(agent.model, "dqn")
-    print(frames)
+            with open(os.path.join(SAVE_DIR, "buffer_seed_" + str(seed) + ".pkl"), "wb") as f:
+                pickle.dump(agent.buffer, f)
+    writer.close()
     return
-
-
-if __name__ == "__main__":
-    with open("models/buffer80000.pkl", "rb") as f:
-        preloaded_buffer = pickle.load(f)
-
-    now = datetime.now()
-    hm = now.strftime("%H%M%S")
-
-    savedir = "models/" + "train_" + hm + "/"
-    os.mkdir(savedir)
-    for seed in seeds:
-        writer = SummaryWriter(log_dir=savedir,comment=str(seed))
-
-        env = getWrappedEnv(seed=seed)
-        dqn = DuelingDQN(env)
-        eval_net = DuelingDQN(env)
-        writer.add_graph(dqn, torch.tensor(env.reset()).unsqueeze(0).float().to(dqn.device))
-
-        policy = eGreedyPolicy(env, seed, 0.1, dqn)
-        buffer = PrioritizedReplayBuffer(seed)
-        agent = DDQNAgent(dqn, eval_net, policy, buffer)
-        agent.buffer = preloaded_buffer
-        train(env, agent, seed, SAVE_DIR=savedir, EPISODES=100, SKIP_FRAMES=10, EPISODE_LENGTH=20)
-        writer.close()

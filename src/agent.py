@@ -56,7 +56,6 @@ class DDQNAgent:
         self.eval_model = eval_model
         self.policy = policy
         self.buffer = buffer
-        self.updates = 0  # how often update function was called
 
     def act(self, state):
         return self.policy.action(state)
@@ -102,8 +101,5 @@ class DDQNAgent:
         self.actor_model.optimizer.step()
 
         self.buffer.update_weights(targets)
-        self.updates += 1
-        if self.updates % 10 == 0:
-            self.sync_nets()
 
         return loss.item()
