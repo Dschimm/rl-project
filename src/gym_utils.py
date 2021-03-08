@@ -30,7 +30,7 @@ class ActionWrapper(gym.ActionWrapper):
 
 
 def getWrappedEnv(name="CarRacing-v0", seed=42):
-    env = gym.make(name)
+    env = gym.make(name, verbose=0)
     env = GrayScaleObservation(env)
     env = ResizeObservation(env, 64)
     env = ActionWrapper(env)
