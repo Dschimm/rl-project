@@ -5,3 +5,4 @@ gym[atari]
 box2d
 opencv-python
 tensorboard
+tqdm

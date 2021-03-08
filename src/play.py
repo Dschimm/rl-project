@@ -21,7 +21,7 @@ def play(env, agent):
     state = env.reset()
     rewards = []
     while not done:
-        #env.render()
+        env.render()
 
         action = agent.act(state)
         next_state, reward, done, meta = env.step(action)
