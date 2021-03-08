@@ -4,9 +4,8 @@ import pickle
 
 from train import train, assemble_training
 from play import assemble_play, play
+
 from pyvirtualdisplay import Display
-
-
 
 parser = argparse.ArgumentParser(description="")
 parser.add_argument("-p", help="Play mode.", action='store_true')
