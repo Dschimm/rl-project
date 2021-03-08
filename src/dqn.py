@@ -12,6 +12,7 @@ class DQN(nn.Module):
         super(DQN, self).__init__()
         self.device = get_cuda_device()
         self.discount = 0.9
+        self.lr = lr
         # env.observation space (0, 255, (96, 96, 3), uint8)
         # input should be (N, Cin, D, H, W)
         # with atari preprocessing
@@ -46,6 +47,7 @@ class DuelingDQN(nn.Module):
         super(DuelingDQN, self).__init__()
         self.device = get_cuda_device()
         self.discount = 0.9
+        self.lr = lr
         # env.observation space (0, 255, (96, 96, 3), uint8)
         # input should be (N, Cin, D, H, W)
         # with atari preprocessing
