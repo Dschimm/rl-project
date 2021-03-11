@@ -53,7 +53,11 @@ def assemble_training(seed, weights=None, lr=0.01, er=1):
             checkpoint["info"]["episodes"],
             "after",
             checkpoint["info"]["frames"],
-            "frames.",
+            "frames.\n",
+            "Learning rate is",
+            checkpoint["info"]["lr"],
+            "\nExploration rate is",
+            checkpoint["info"]["er"],
         )
         return env, agent, checkpoint["info"]["episodes"], checkpoint["info"]["frames"]
 
