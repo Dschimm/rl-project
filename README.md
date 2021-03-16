@@ -10,7 +10,7 @@ To improve learning, we pre-processed the states with:
  * Framestacking
  * Resizing to 64\*64 pixels
 
-Additionally, we implemented [macro-features](https://github.com/Dschimm/rl-project/blob/main/src/gym_utils.py#L15).
+Additionally, we implemented [macro-actions](https://github.com/Dschimm/rl-project/blob/main/src/gym_utils.py#L15).
 
 Our agent implements with the following features:
  * DQN
