@@ -6,6 +6,7 @@ Trained on:
  * 30 GB RAM
 
 Time per episode: ~3.5s
+Thus, time for 150 episodes = ~6.07 days
 
 For models in `prio/`, we used a prioritized replay buffer,
 otherwise we used a randomly sampling buffer.
