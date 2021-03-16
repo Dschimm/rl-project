@@ -41,9 +41,9 @@ def main():
             agent,
             seed,
             SAVE_DIR=save_dir,
-            EPISODES=400,
-            EPISODE_LENGTH=3,
-            SKIP_FRAMES=500,
+            EPISODES=100,
+            EPISODE_LENGTH=10000,
+            SKIP_FRAMES=80000,
             OFFSET_EP=episodes,
             OFFSET_FR=frames,
         )

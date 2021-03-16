@@ -43,7 +43,7 @@ def assemble_training(seed, weights=None, lr=0.01, er=1):
         load_checkpoint(eval_net, weights, dqn.device)
 
         policy = eGreedyPolicyDecay(env, seed, checkpoint["info"]["er"], er, 0.1, 25e4, dqn)
-        buffer = PrioritizedReplayBuffer()
+        buffer = ReplayBuffer(seed=seed)
         agent = DDQNAgent(dqn, eval_net, policy, buffer)
         with open(checkpoint["info"]["buffer"], "rb") as f:
             preloaded_buffer = pickle.load(f)
@@ -66,7 +66,7 @@ def assemble_training(seed, weights=None, lr=0.01, er=1):
     eval_net = DuelingDQN(env)
 
     policy = eGreedyPolicyDecay(env, seed, er, er, 0.1, 25e4, dqn)
-    buffer = PrioritizedReplayBuffer()
+    buffer = ReplayBuffer(seed=seed)
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
     return env, agent, 0, 0
 
