@@ -5,7 +5,7 @@ Trained on:
  * Intel Xeon CPU E5-1650 v3 @ 3.50GHz (12 threads)
  * 1 nvidia RTX 2080 TI
  * 30 GB RAM
- * 
+
 #### Time
 Time per episode: ~3.5s
 
