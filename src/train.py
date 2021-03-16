@@ -19,6 +19,7 @@ from agent import Agent, DDQNAgent
 
 from utils import get_latest_model, save_checkpoint, load_checkpoint, get_cuda_device
 from gym_utils import getWrappedEnv
+import config as cfg
 
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
@@ -32,7 +33,7 @@ seeds = [
 ]
 
 
-def assemble_training(seed, weights=None, lr=0.01, er=1):
+def assemble_training(seed, weights=None, lr=cfg.LEARNING_RATE, er=cfg.EPS_START):
     if weights:
         checkpoint = torch.load(weights)
         env = getWrappedEnv(seed=checkpoint["info"]["seed"])
@@ -42,7 +43,7 @@ def assemble_training(seed, weights=None, lr=0.01, er=1):
         load_checkpoint(dqn, weights, dqn.device)
         load_checkpoint(eval_net, weights, dqn.device)
 
-        policy = eGreedyPolicyDecay(env, seed, checkpoint["info"]["er"], er, 0.1, 25e4, dqn)
+        policy = eGreedyPolicyDecay(env, seed, checkpoint["info"]["er"], er, cfg.EPS_END, cfg.DECAY_STEPS, dqn)
         buffer = ReplayBuffer(seed=seed)
         agent = DDQNAgent(dqn, eval_net, policy, buffer)
         with open(checkpoint["info"]["buffer"], "rb") as f:
@@ -65,7 +66,7 @@ def assemble_training(seed, weights=None, lr=0.01, er=1):
     dqn = DuelingDQN(env, lr=lr)
     eval_net = DuelingDQN(env)
 
-    policy = eGreedyPolicyDecay(env, seed, er, er, 0.1, 25e4, dqn)
+    policy = eGreedyPolicyDecay(env, seed, er, er, cfg.EPS_END, cfg.DECAY_STEPS, dqn)
     buffer = ReplayBuffer(seed=seed)
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
     return env, agent, 0, 0
@@ -76,9 +77,9 @@ def train(
     agent,
     seed,
     SAVE_DIR="models/",
-    EPISODES=10000,
-    EPISODE_LENGTH=10000,
-    SKIP_FRAMES=80000,
+    EPISODES=cfg.EPISODES,
+    EPISODE_LENGTH=cfg.EPISODE_LENGTH,
+    SKIP_FRAMES=cfg.SKIP_FRAMES,
     OFFSET_EP=0,
     OFFSET_FR=0,
 ):

@@ -4,15 +4,16 @@ import pickle
 
 from train import train, assemble_training
 from play import assemble_play, play
+import config as cfg
 
 from pyvirtualdisplay import Display
 
 parser = argparse.ArgumentParser(description="")
-parser.add_argument("-p", help="Play mode.", action='store_true')
-parser.add_argument("-d", help="Devbox. Uses pyvirtualdisplay", action='store_true')
+parser.add_argument("-p", help="Play mode. Displays one episode using given weights.", action='store_true')
+parser.add_argument("-d", help="Devbox mode. Uses pyvirtualdisplay.", action='store_true')
 
-parser.add_argument("--weights", help="Checkpoint from which to resume training.")
-parser.add_argument("--dir", help="Checkpoint directory.")
+parser.add_argument("--weights", help="pytorch checkpoint file to load.")
+parser.add_argument("--dir", help="Location relative to models/ for saving checkpoints, buffer and tensorboard.")
 parser.add_argument("--seed", help="Random seed.")
 
 def main():
@@ -41,9 +42,9 @@ def main():
             agent,
             seed,
             SAVE_DIR=save_dir,
-            EPISODES=100,
-            EPISODE_LENGTH=10000,
-            SKIP_FRAMES=80000,
+            EPISODES=cfg.EPISODES,
+            EPISODE_LENGTH=cfg.EPISODE_LENGTH,
+            SKIP_FRAMES=cfg.SKIP_FRAMES,
             OFFSET_EP=episodes,
             OFFSET_FR=frames,
         )

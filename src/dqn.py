@@ -5,13 +5,13 @@ import torch.nn.functional as F
 import numpy as np
 
 from utils import get_cuda_device
-
+import config as cfg
 
 class DQN(nn.Module):
-    def __init__(self, env, lr=0.01):
+    def __init__(self, env, lr=cfg.LEARNING_RATE):
         super(DQN, self).__init__()
         self.device = get_cuda_device()
-        self.discount = 0.9
+        self.discount = cfg.DISCOUNT_FACTOR
         self.lr = lr
         # env.observation space (0, 255, (96, 96, 3), uint8)
         # input should be (N, Cin, D, H, W)
@@ -43,10 +43,10 @@ class DQN(nn.Module):
 
 class DuelingDQN(nn.Module):
     # estimates Value function
-    def __init__(self, env, lr=0.01):
+    def __init__(self, env, lr=cfg.LEARNING_RATE):
         super(DuelingDQN, self).__init__()
         self.device = get_cuda_device()
-        self.discount = 0.9
+        self.discount = cfg.DISCOUNT_FACTOR
         self.lr = lr
         # env.observation space (0, 255, (96, 96, 3), uint8)
         # input should be (N, Cin, D, H, W)
