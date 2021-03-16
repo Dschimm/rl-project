@@ -1,10 +1,11 @@
 from collections import deque
 import random
 import numpy as np
+import config as cfg
 
 
 class ReplayBuffer:
-    def __init__(self, seed, batch_size=64, size=1e5):
+    def __init__(self, seed, batch_size=cfg.BATCH_SIZE, size=cfg.BUFFER_SIZE):
         self.queue = deque(maxlen=int(size))
         self.batch_size = batch_size
         random.seed(seed)
@@ -23,7 +24,7 @@ class ReplayBuffer:
 
 
 class PrioritizedReplayBuffer:
-    def __init__(self, batch_size=64, size=1e5):
+    def __init__(self, batch_size=cfg.BATCH_SIZE, size=cfg.BUFFER_SIZE):
         self.max_size = size
         self.experience = list()
         self.prios = list()

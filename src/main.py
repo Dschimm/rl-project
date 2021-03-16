@@ -4,6 +4,7 @@ import pickle
 
 from train import train, assemble_training
 from play import assemble_play, play
+import config as cfg
 
 from pyvirtualdisplay import Display
 
@@ -41,9 +42,9 @@ def main():
             agent,
             seed,
             SAVE_DIR=save_dir,
-            EPISODES=100,
-            EPISODE_LENGTH=10000,
-            SKIP_FRAMES=80000,
+            EPISODES=cfg.EPISODES,
+            EPISODE_LENGTH=cfg.EPISODE_LENGTH,
+            SKIP_FRAMES=cfg.SKIP_FRAMES,
             OFFSET_EP=episodes,
             OFFSET_FR=frames,
         )

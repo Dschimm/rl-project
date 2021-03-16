@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 
-
+import config as cfg
 class Agent:
     def __init__(self, model, policy, buffer):
         self.model = model
@@ -63,7 +63,7 @@ class DDQNAgent:
     def fill_buffer(self, episode):
         self.buffer.append(episode)
 
-    def sync_nets(self, tau=0.01):
+    def sync_nets(self, tau=cfg.TAU):
         for target_param, local_param in zip(
             self.eval_model.parameters(), self.actor_model.parameters()
         ):

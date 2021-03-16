@@ -5,6 +5,7 @@ from gym.wrappers.resize_observation import ResizeObservation
 from gym.wrappers.frame_stack import FrameStack
 from gym.wrappers.gray_scale_observation import GrayScaleObservation
 
+import config as cfg
 # [steering, acc, brake]
 # [(-1,1), (0,1), (0,1)]
 
@@ -32,8 +33,8 @@ class ActionWrapper(gym.ActionWrapper):
 def getWrappedEnv(name="CarRacing-v0", seed=42):
     env = gym.make(name, verbose=0)
     env = GrayScaleObservation(env)
-    env = ResizeObservation(env, 64)
+    env = ResizeObservation(env, cfg.RESIZE_SHAPE)
     env = ActionWrapper(env)
-    env = FrameStack(env, 4)
+    env = FrameStack(env, cfg.FRAMESTACK)
     env.seed(seed)
     return env
