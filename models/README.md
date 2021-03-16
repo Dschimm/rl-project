@@ -7,8 +7,8 @@ Trained on:
 
 Time per episode: ~3.5s
 
-For models in `prio/`, we used Prioritized Replay Buffer
-Otherwise we used a normal buffer.
+For models in `prio/`, we used a prioritized replay buffer,
+otherwise we used a randomly sampling buffer.
 
 All the hyperparameters used can be found in our [config](https://github.com/Dschimm/rl-project/blob/main/src/config.py).
 Unfortunately, since training takes some time, we were not able to try a variety of hyperparameters.
