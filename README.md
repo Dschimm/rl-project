@@ -1,5 +1,6 @@
 # 🏁🦆🏎️ RUBBER DUCK RACING 🏎️🦆🏁
 <img src="https://github.com/Dschimm/rl-project/blob/main/images/racing_mascot.jpg" width="250" height="250" align="right">
+
 [Reinforcement Learning Project for RL2020@LUH](https://github.com/automl-edu/RL_lecture)
 
 We decided to build an agent that solves the CarRacing-v0 gym environment.
