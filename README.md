@@ -25,11 +25,7 @@ Our agent implements with the following features:
 
 Build container 
 ```
-docker build .
-```
-OR
-```
-docker-compose up
+docker build . -t rl:latest
 ```
 
 ### Pip and venv
@@ -48,6 +44,43 @@ Install required packages
 ```
 pip install -r requirements.txt
 ```
+## Running the code
+
+Run the code from parent directory via main.py:
+```
+$ /home/dentarthur/rl-project> python src/main.py --help
+
+usage: main.py [-h] [-p] [-d] [--weights WEIGHTS] [--dir DIR] [--seed SEED]
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -p                 Play mode. Displays one episode using given weights.
+  -d                 Devbox mode. Uses pyvirtualdisplay.
+  --weights WEIGHTS  pytorch checkpoint file to load.
+  --dir DIR          Location relative to models/ for saving checkpoints, buffer and tensorboard.
+  --seed SEED        Random seed.
+```
+#### Examples:
+
+Training from scratch on headless server; seed 42, saving in models/exp42:
+
+```
+$ /home/dentarthur/rl-project> python src/main.py -d --seed 42 --dir exp42
+```
+
+Resume above training:
+
+```
+$ /home/dentarthur/rl-project> python src/main.py -d  --dir exp42 --weights models/exp42/latest.pt
+```
+
+Let a pretrained agent play:
+
+
+```
+$ /home/dentarthur/rl-project> python src/main.py -p --weights models/exp42/latest.pt
+```
+
 
 ## Authors
 
