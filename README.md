@@ -1,5 +1,22 @@
 # 🏁🦆🏎️ RUBBER DUCK RACING 🏎️🦆🏁
-Reinforcement Learning Project for RL2020@LUH
+[Reinforcement Learning Project for RL2020@LUH](https://github.com/automl-edu/RL_lecture)
+
+We decided to build an agent that solves the CarRacing-v0 gym environment.
+
+To improve learning, we pre-processed the states with:
+ * Greyscaling
+ * Framestacking
+ * Resizing to 64\*64 pixels
+ * 
+Additionally, we implemented [macro-features](https://github.com/Dschimm/rl-project/blob/main/src/gym_utils.py#L15).
+
+Our agent implements with the following features:
+ * DQN
+ * DoubleDQN
+ * DuelingDQN
+ * Prioritized Replay Buffer
+ * Decaying  ε-greedy exploration
+
 <img src="https://github.com/Dschimm/rl-project/blob/main/images/racing_mascot.jpg" width="250" height="250" align="right">
 
 ## Installation
