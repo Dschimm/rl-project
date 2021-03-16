@@ -8,11 +8,11 @@ from play import assemble_play, play
 from pyvirtualdisplay import Display
 
 parser = argparse.ArgumentParser(description="")
-parser.add_argument("-p", help="Play mode.", action='store_true')
-parser.add_argument("-d", help="Devbox. Uses pyvirtualdisplay", action='store_true')
+parser.add_argument("-p", help="Play mode. Displays one episode using given weights.", action='store_true')
+parser.add_argument("-d", help="Devbox mode. Uses pyvirtualdisplay.", action='store_true')
 
-parser.add_argument("--weights", help="Checkpoint from which to resume training.")
-parser.add_argument("--dir", help="Checkpoint directory.")
+parser.add_argument("--weights", help="pytorch checkpoint file to load.")
+parser.add_argument("--dir", help="Location relative to models/ for saving checkpoints, buffer and tensorboard.")
 parser.add_argument("--seed", help="Random seed.")
 
 def main():
