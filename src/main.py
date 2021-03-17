@@ -35,7 +35,8 @@ def main():
         play(env, agent)
 
     elif args.e:
-        evaluate_agents(args.dir)
+        p = os.path.join("models", args.dir)
+        evaluate_agents(p)
 
     else:
         save_dir = os.path.join("models", args.dir)
