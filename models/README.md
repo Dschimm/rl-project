@@ -37,7 +37,8 @@ $ /home/dentarthur/rl-project> tensorboard --logdir models/tensorboard
 <img src="https://github.com/Dschimm/rl-project/blob/main/images/trainreward.svg" width="450" height="450" align="left">
 
 <img src="https://github.com/Dschimm/rl-project/blob/main/images/trainloss.svg" width="450" height="450" align="left">
-
+</br>
+</br>
 
 Note: Over time, epsilon decays. The car will therefore be faster and moves forward with a higher probability.
 
