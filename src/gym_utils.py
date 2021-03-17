@@ -6,11 +6,12 @@ from gym.wrappers.frame_stack import FrameStack
 from gym.wrappers.gray_scale_observation import GrayScaleObservation
 
 import config as cfg
-# [steering, acc, brake]
-# [(-1,1), (0,1), (0,1)]
 
 
 class ActionWrapper(gym.ActionWrapper):
+    # Original action space
+    # [steering, acc, brake]
+    # [(-1,1), (0,1), (0,1)]
     def __init__(self, env):
         super().__init__(env)
         self.actions = {
@@ -31,6 +32,7 @@ class ActionWrapper(gym.ActionWrapper):
 
 
 def getWrappedEnv(name="CarRacing-v0", seed=42):
+    """Return the env with applied pre-processing wrappers"""
     env = gym.make(name, verbose=0)
     env = GrayScaleObservation(env)
     env = ResizeObservation(env, cfg.RESIZE_SHAPE)

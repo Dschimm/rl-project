@@ -15,19 +15,21 @@ from collections import defaultdict
 
 
 def evaluate_agents(dir):
-    # load every agent in directory, play 1 episode in every seed, plot mean reward
+    """Load every checkpoint in directory, play 10 episodes in every seed, plot mean reward"""
     writer = SummaryWriter(log_dir=dir)
-    files = sorted([filename for filename in os.listdir(
-        dir) if filename.endswith(".pt")], key=lambda x: int(x[29:-10]))
+    files = sorted(
+        [filename for filename in os.listdir(dir) if filename.endswith(".pt")],
+        key=lambda x: int(x[29:-10]),
+    )
     print(files)
     for filename in files:
         filename = os.path.join(dir, filename)
-        checkpoint = torch.load(filename, map_location='cpu')
+        checkpoint = torch.load(filename, map_location="cpu")
         frames = checkpoint["info"]["frames"]
         print(filename, frames)
     for filename in files:
         filename = os.path.join(dir, filename)
-        checkpoint = torch.load(filename, map_location='cpu')
+        checkpoint = torch.load(filename, map_location="cpu")
         env = getWrappedEnv(seed=checkpoint["info"]["seed"])
         dqn = DuelingDQN(env)
 
@@ -43,6 +45,7 @@ def evaluate_agents(dir):
 
 
 def eval(agent, EPISODES=10):
+    """Play 10 episodes with given agent and return rewards"""
     rewards = defaultdict(list)
     env = getWrappedEnv()
     for seed in cfg.SEEDS:
