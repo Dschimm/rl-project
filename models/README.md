@@ -48,10 +48,8 @@ This plot show the average reward played over all 4 seeds gained in 10 episodes.
 As you can see, the performance is hardly influenced by seed or buffer implementation.
 
 
-<img src="https://github.com/Dschimm/rl-project/blob/main/images/eval.svg" width="600" height="1200" align="left">
-</br></br></br></br></br></br></br></br></br></br>
-</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
-</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+<img src="https://github.com/Dschimm/rl-project/blob/main/images/eval.svg" width="1200" height="600" align="left">
+</br></br></br></br>
 
 
 ## Conclusion
