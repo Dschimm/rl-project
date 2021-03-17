@@ -38,7 +38,7 @@ $ /home/dentarthur/rl-project> tensorboard --logdir models/tensorboard
 
 <img src="https://github.com/Dschimm/rl-project/blob/main/images/trainloss.svg" width="450" height="450" align="left">
 </br></br></br></br></br></br></br></br></br></br>
-</br>
+</br></br></br></br></br></br></br></br></br></br></br></br></br>
 
 Note: Over time, epsilon decays. The car will therefore be faster and moves forward with a higher probability.
 
@@ -61,8 +61,8 @@ Normal agent (left) and agent with 0.5 eps (right):
 </br>
 </br></br></br></br></br>
 </br>
-</br></br></br></br></br>
-</br></br></br></br></br>
+</br>
+</br>
 
 With more time (and less training time) we would try to:
  1. implement a noisy DQN for a different exploration
