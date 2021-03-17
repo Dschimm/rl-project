@@ -59,9 +59,9 @@ Normal agent (left) and agent with 0.5 eps (right):
 
 <img src="https://github.com/Dschimm/rl-project/blob/main/images/1337epsgreedy.gif" width="200" height="200" align="left"> 
 </br>
+</br></br></br></br></br>
 </br>
-</br>
-</br>
+</br></br></br></br></br>
 </br></br></br></br></br>
 
 With more time (and less training time) we would try to:
