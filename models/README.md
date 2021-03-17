@@ -44,7 +44,8 @@ Note: Over time, epsilon decays. The car will therefore be faster and moves forw
 
 ## Evaluation of checkpoints
 
-TODO - eval and plots (and table)
+<img src="https://github.com/Dschimm/rl-project/blob/main/images/eval.svg" width="600" height="1500" align="left">
+
 
 ## Conclusion
 
