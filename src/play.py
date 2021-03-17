@@ -10,6 +10,10 @@ from gym_utils import getWrappedEnv
 
 
 def assemble_play(weights, seed):
+    """
+    Prepare the environment for playing an episode with a fixed policy to 
+    evaluate the learned model.
+    """
     env = getWrappedEnv(seed=seed)
     dqn = DuelingDQN(env)
     load_checkpoint(dqn, weights, dqn.device)
@@ -19,6 +23,9 @@ def assemble_play(weights, seed):
 
 
 def play(env, agent):
+    """
+    Play 10 episodes with the given agent and evironment.
+    """
     for i in range(10):
         done = False
         state = env.reset()

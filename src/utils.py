@@ -5,12 +5,18 @@ import torch
 
 
 def get_latest_model(prefix=""):
+    """
+    Find the latest model according to the naming convention of saving the timestamp.
+    """
     files = [f for f in os.listdir("models") if f.endswith(
         "pt") and f.startswith(prefix)]
     return files[0]
 
 
 def save_checkpoint(model, name, info={}, overwrite=False, loc="models/"):
+    """
+    Save a model checkpoint at with the given name.
+    """
     if overwrite:
         torch.save({"model_state_dict": model.state_dict()},
                    os.path.join(loc, name + ".pt"))
@@ -27,6 +33,9 @@ def save_checkpoint(model, name, info={}, overwrite=False, loc="models/"):
 
 
 def load_checkpoint(model, name, device):
+    """
+    Load the specified model with the given name to the device.
+    """
     print("Load model", name)
     sleep(1)
     checkpoint = torch.load(name, map_location=device)

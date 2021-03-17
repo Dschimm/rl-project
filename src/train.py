@@ -34,6 +34,11 @@ seeds = [
 
 
 def assemble_training(seed, weights=None, lr=cfg.LEARNING_RATE, er=cfg.EPS_START):
+    """
+    Configure everything needed to start the training. The parameter weights is used to continue training 
+    and set the weights. This function wraps the environment with all the preprocessing steps, sets the 
+    type of policy and the Replay Buffer.
+    """
     if weights:
         checkpoint = torch.load(weights)
         env = getWrappedEnv(seed=checkpoint["info"]["seed"])
@@ -85,6 +90,10 @@ def train(
     OFFSET_EP=0,
     OFFSET_FR=0,
 ):
+    """
+    Start the training with the given environment, model and seed. Every episode the 
+    mean reward, frames and the loss gets written into a tensorboard file. 
+    """
 
     writer = SummaryWriter(log_dir=SAVE_DIR, comment=str(seed))
     writer.add_graph(

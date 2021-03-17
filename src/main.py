@@ -24,6 +24,9 @@ parser.add_argument("--seed", help="Random seed.")
 
 
 def main():
+    """
+    Start the training or evaluation according to the given arguments
+    """
     args = parser.parse_args()
 
     if args.d:

@@ -3,6 +3,10 @@ import torch
 
 
 class RandomPolicy:
+    """
+    Get a random action.
+    """
+
     def __init__(self, seed=None):
         np.random.seed(seed)
 
@@ -11,6 +15,10 @@ class RandomPolicy:
 
 
 class NoExplorationPolicy:
+    """
+    Get the best action according to the policy.
+    """
+
     def __init__(self, model):
         self.model = model
 
@@ -21,6 +29,11 @@ class NoExplorationPolicy:
 
 
 class eGreedyPolicy:
+    """
+    Standard epsilon greedy policy. The policy chooses the best action with probability
+    1-eps and a random action with probability eps.
+    """
+
     def __init__(self, env, seed, eps, model):
         self.eps = eps
         np.random.seed(seed)
@@ -36,11 +49,18 @@ class eGreedyPolicy:
 
 
 class eGreedyPolicyDecay(eGreedyPolicy):
+    """
+    Extension of the epsilon greedy policy with a linear decay over a set amount of steps.
+    """
+
     def __init__(self, env, seed, eps, eps_start, eps_end, decay_steps, model):
         super(eGreedyPolicyDecay, self).__init__(env, seed, eps, model)
         self.decay = (eps_start - eps_end) / decay_steps
         self.eps_end = eps_end
 
     def decay_eps(self):
+        """
+        Update epsilon with the decay.
+        """
         if self.eps > self.eps_end:
             self.eps -= self.decay
