@@ -38,6 +38,7 @@ $ /home/dentarthur/rl-project> tensorboard --logdir models/tensorboard
 
 <img src="https://github.com/Dschimm/rl-project/blob/main/images/trainloss.svg" width="450" height="450" align="left">
 
+
 Note: Over time, epsilon decays. The car will therefore be faster and moves forward with a higher probability.
 
 ## Evaluation of checkpoints
@@ -51,7 +52,19 @@ To be more precise, it has learned to drive straight forward and hopes that most
 
 We think this is due to the small likelihood of ever successfully exploring how to drive a curve when using epsilon greedy exploration.
 
+Normal agent (left) and agent with 0.5 eps (right):
+
+<img src="https://github.com/Dschimm/rl-project/blob/main/images/1337.gif" width="200" height="200" align="left"> 
+
+<img src="https://github.com/Dschimm/rl-project/blob/main/images/1337epsgreedy.gif" width="200" height="200" align="left"> 
+</br>
+</br>
+</br>
+</br>
+</br></br></br></br></br>
+
 With more time (and less training time) we would try to:
  1. implement a noisy DQN for a different exploration
  2. shape the reward function to punish driving on grass for too long
  3. increase downsampling for less information input
+ 4. Remove going straight from action space (only allowing gas + direction)
