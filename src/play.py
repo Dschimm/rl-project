@@ -17,16 +17,17 @@ def assemble_play(weights, seed):
     return env, agent
 
 def play(env, agent):
-    done = False
-    state = env.reset()
-    rewards = []
-    while not done:
-        env.render()
+    for i in range(10):
+        done = False
+        state = env.reset()
+        rewards = []
+        while not done:
+            env.render()
 
-        action = agent.act(state)
-        next_state, reward, done, meta = env.step(action)
-        rewards.append(reward)
-        state = next_state
+            action = agent.act(state)
+            next_state, reward, done, meta = env.step(action)
+            rewards.append(reward)
+            state = next_state
 
-    print("Rewards:", sum(rewards))
+        print("Rewards:", sum(rewards))
     return
