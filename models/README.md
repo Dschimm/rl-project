@@ -28,6 +28,11 @@ We used 4 different seeds (for env and numpy) for training and evaluation, namel
 
 ## Training visualization
 
+To click through our data yourself, you can run 
+```
+$ /home/dentarthur/rl-project> tensorboard --logdir models/tensorboard
+```
+
 TODO - plots
 
 ## Evaluation of checkpoints
