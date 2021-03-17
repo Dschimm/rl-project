@@ -32,8 +32,12 @@ To click through our data yourself, you can run
 ```
 $ /home/dentarthur/rl-project> tensorboard --logdir models/tensorboard
 ```
+#### Mean Reward and Loss per Frame
 
-TODO - plots
+<img src="https://github.com/Dschimm/rl-project/blob/main/images/trainreward.svg" width="450" height="450" align="left">
+
+<img src="https://github.com/Dschimm/rl-project/blob/main/images/trainloss.svg" width="450" height="450" align="left">
+
 
 ## Evaluation of checkpoints
 
