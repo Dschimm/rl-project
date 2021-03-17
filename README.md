@@ -3,7 +3,7 @@
 
 [Reinforcement Learning Project for RL2020@LUH](https://github.com/automl-edu/RL_lecture)
 
-We decided to build an agent that solves the CarRacing-v0 gym environment.
+We decided to build an agent that solves the [CarRacing-v0](https://gym.openai.com/envs/CarRacing-v0/) gym environment.
 
 To improve learning, we pre-processed the states with:
  * Greyscaling
