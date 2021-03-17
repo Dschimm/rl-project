@@ -2,6 +2,8 @@ import torch
 import torch.nn.functional as F
 
 import config as cfg
+
+
 class Agent:
     def __init__(self, model, policy, buffer):
         self.model = model
@@ -39,7 +41,8 @@ class Agent:
             * self.model(next_states).max(dim=-1)[0].detach()
         )
 
-        targets = F.mse_loss(q_values, target_q_values, reduction="none").cpu().detach().numpy()
+        targets = F.mse_loss(q_values, target_q_values,
+                             reduction="none").cpu().detach().numpy()
         loss = F.mse_loss(q_values, target_q_values)
 
         loss.backward()
@@ -67,7 +70,8 @@ class DDQNAgent:
         for target_param, local_param in zip(
             self.eval_model.parameters(), self.actor_model.parameters()
         ):
-            target_param.data.copy_(tau * local_param.data + (1 - tau) * target_param.data)
+            target_param.data.copy_(
+                tau * local_param.data + (1 - tau) * target_param.data)
 
     def update(self):
         batch = self.buffer.get_sample()
@@ -76,10 +80,12 @@ class DDQNAgent:
         self.actor_model.optimizer.zero_grad()
 
         states = torch.tensor(states).float().to(self.actor_model.device)
-        actions = torch.tensor(actions).unsqueeze(-1).to(self.actor_model.device)
+        actions = torch.tensor(
+            actions).unsqueeze(-1).to(self.actor_model.device)
         rewards = torch.tensor(rewards).float().to(self.actor_model.device)
         dones = torch.tensor(dones).float().to(self.actor_model.device)
-        next_states = torch.tensor(next_states).float().to(self.actor_model.device)
+        next_states = torch.tensor(next_states).float().to(
+            self.actor_model.device)
 
         q_values = (
             torch.gather(self.actor_model(states), dim=-1, index=actions)
@@ -94,7 +100,8 @@ class DDQNAgent:
             * self.eval_model(next_states).max(dim=-1)[0].detach()
         )
 
-        targets = F.mse_loss(q_values, target_q_values, reduction="none").cpu().detach().numpy()
+        targets = F.mse_loss(q_values, target_q_values,
+                             reduction="none").cpu().detach().numpy()
         loss = F.mse_loss(q_values, target_q_values)
 
         loss.backward()

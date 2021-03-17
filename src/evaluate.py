@@ -17,7 +17,8 @@ from collections import defaultdict
 def evaluate_agents(dir):
     # load every agent in directory, play 1 episode in every seed, plot mean reward
     writer = SummaryWriter(log_dir=dir)
-    files = sorted([filename for filename in os.listdir(dir) if filename.endswith(".pt")], key=lambda x : int(x[29:-10]))
+    files = sorted([filename for filename in os.listdir(
+        dir) if filename.endswith(".pt")], key=lambda x: int(x[29:-10]))
     print(files)
     for filename in files:
         filename = os.path.join(dir, filename)
@@ -25,20 +26,21 @@ def evaluate_agents(dir):
         frames = checkpoint["info"]["frames"]
         print(filename, frames)
     for filename in files:
-            filename = os.path.join(dir, filename)
-            checkpoint = torch.load(filename, map_location='cpu')
-            env = getWrappedEnv(seed=checkpoint["info"]["seed"])
-            dqn = DuelingDQN(env)
+        filename = os.path.join(dir, filename)
+        checkpoint = torch.load(filename, map_location='cpu')
+        env = getWrappedEnv(seed=checkpoint["info"]["seed"])
+        dqn = DuelingDQN(env)
 
-            load_checkpoint(dqn, filename, dqn.device)
-            
-            policy = NoExplorationPolicy(dqn)
-            agent = Agent(dqn, policy, None)
-            frames = checkpoint["info"]["frames"]
-            rewards = eval(agent)
-            mean_rewards = {str(s) : sum(r) / len(r) for s,r in rewards.items()}
-            writer.add_scalars("MeanReward", mean_rewards, frames)
+        load_checkpoint(dqn, filename, dqn.device)
+
+        policy = NoExplorationPolicy(dqn)
+        agent = Agent(dqn, policy, None)
+        frames = checkpoint["info"]["frames"]
+        rewards = eval(agent)
+        mean_rewards = {str(s): sum(r) / len(r) for s, r in rewards.items()}
+        writer.add_scalars("MeanReward", mean_rewards, frames)
     writer.close()
+
 
 def eval(agent, EPISODES=10):
     rewards = defaultdict(list)
@@ -54,5 +56,3 @@ def eval(agent, EPISODES=10):
                 rewards[seed].append(reward)
                 state = next_state
     return rewards
-
-

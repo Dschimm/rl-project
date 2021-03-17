@@ -5,20 +5,22 @@ import torch
 
 
 def get_latest_model(prefix=""):
-    files = [f for f in os.listdir("models") if f.endswith("pt") and f.startswith(prefix)]
+    files = [f for f in os.listdir("models") if f.endswith(
+        "pt") and f.startswith(prefix)]
     return files[0]
 
 
 def save_checkpoint(model, name, info={}, overwrite=False, loc="models/"):
     if overwrite:
-        torch.save({"model_state_dict": model.state_dict()}, os.path.join(loc, name + ".pt"))
+        torch.save({"model_state_dict": model.state_dict()},
+                   os.path.join(loc, name + ".pt"))
         return
     now = datetime.now()
     hm = now.strftime("%H%M%S")
     torch.save(
         {
             "model_state_dict": model.state_dict(),
-            "info" : info
+            "info": info
         },
         os.path.join(loc, name + "_" + hm + ".pt"),
     )
@@ -29,7 +31,6 @@ def load_checkpoint(model, name, device):
     sleep(1)
     checkpoint = torch.load(name, map_location=device)
     model.load_state_dict(checkpoint["model_state_dict"])
-    
 
 
 def get_cuda_device():
@@ -42,7 +43,8 @@ def get_cuda_device():
         # cuda:0 will still use all GPUs
         device = torch.device("cuda:0")
         dev_name = torch.cuda.get_device_name(torch.cuda.current_device())
-        print('using {} device(s): "{}"'.format(torch.cuda.device_count(), dev_name))
+        print('using {} device(s): "{}"'.format(
+            torch.cuda.device_count(), dev_name))
     else:
         device = torch.device("cpu")
     return device

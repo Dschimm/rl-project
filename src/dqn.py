@@ -7,6 +7,7 @@ import numpy as np
 from utils import get_cuda_device
 import config as cfg
 
+
 class DQN(nn.Module):
     def __init__(self, env, lr=cfg.LEARNING_RATE):
         super(DQN, self).__init__()
@@ -17,9 +18,11 @@ class DQN(nn.Module):
         # input should be (N, Cin, D, H, W)
         # with atari preprocessing
 
-        self.c1 = nn.Conv3d(in_channels=1, out_channels=6, kernel_size=(2, 16, 16))  # 81x81x6
+        self.c1 = nn.Conv3d(in_channels=1, out_channels=6,
+                            kernel_size=(2, 16, 16))  # 81x81x6
         self.pool = nn.MaxPool3d(2, stride=2)  # 40x40x6
-        self.c2 = nn.Conv2d(in_channels=6, out_channels=4, kernel_size=8)  # 33x33x4
+        self.c2 = nn.Conv2d(in_channels=6, out_channels=4,
+                            kernel_size=8)  # 33x33x4
         self.fc1 = nn.Linear(8 * 8 * 2, 64)
         self.fc2 = nn.Linear(64, env.action_space.n)
 
@@ -52,9 +55,11 @@ class DuelingDQN(nn.Module):
         # input should be (N, Cin, D, H, W)
         # with atari preprocessing
 
-        self.c1 = nn.Conv3d(in_channels=1, out_channels=6, kernel_size=(2, 16, 16))  # 81x81x6
+        self.c1 = nn.Conv3d(in_channels=1, out_channels=6,
+                            kernel_size=(2, 16, 16))  # 81x81x6
         self.pool = nn.MaxPool3d(2, stride=2)  # 40x40x6
-        self.c2 = nn.Conv2d(in_channels=6, out_channels=4, kernel_size=8)  # 33x33x4
+        self.c2 = nn.Conv2d(in_channels=6, out_channels=4,
+                            kernel_size=8)  # 33x33x4
         self.fcA1 = nn.Linear(8 * 8 * 2, 64)
         self.fcV1 = nn.Linear(8 * 8 * 2, 64)
         self.fcA2 = nn.Linear(64, env.action_space.n)
@@ -77,5 +82,5 @@ class DuelingDQN(nn.Module):
         A = self.relu(self.fcA2(A))
         V = self.relu(self.fcV1(y))
         V = self.relu(self.fcV2(V))
-        A = torch.sub(A, torch.mean(A)) # stabilizes learning
-        return torch.add(A,V)
+        A = torch.sub(A, torch.mean(A))  # stabilizes learning
+        return torch.add(A, V)

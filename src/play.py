@@ -8,6 +8,7 @@ from agent import Agent
 from utils import get_latest_model, load_checkpoint
 from gym_utils import getWrappedEnv
 
+
 def assemble_play(weights, seed):
     env = getWrappedEnv(seed=seed)
     dqn = DuelingDQN(env)
@@ -15,6 +16,7 @@ def assemble_play(weights, seed):
     policy = NoExplorationPolicy(dqn)
     agent = Agent(dqn, policy, None)
     return env, agent
+
 
 def play(env, agent):
     for i in range(10):

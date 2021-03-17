@@ -43,7 +43,8 @@ def assemble_training(seed, weights=None, lr=cfg.LEARNING_RATE, er=cfg.EPS_START
         load_checkpoint(dqn, weights, dqn.device)
         load_checkpoint(eval_net, weights, dqn.device)
 
-        policy = eGreedyPolicyDecay(env, seed, checkpoint["info"]["er"], er, cfg.EPS_END, cfg.DECAY_STEPS, dqn)
+        policy = eGreedyPolicyDecay(
+            env, seed, checkpoint["info"]["er"], er, cfg.EPS_END, cfg.DECAY_STEPS, dqn)
         buffer = ReplayBuffer(seed=seed)
         agent = DDQNAgent(dqn, eval_net, policy, buffer)
         with open(checkpoint["info"]["buffer"], "rb") as f:
@@ -66,7 +67,8 @@ def assemble_training(seed, weights=None, lr=cfg.LEARNING_RATE, er=cfg.EPS_START
     dqn = DuelingDQN(env, lr=lr)
     eval_net = DuelingDQN(env)
 
-    policy = eGreedyPolicyDecay(env, seed, er, er, cfg.EPS_END, cfg.DECAY_STEPS, dqn)
+    policy = eGreedyPolicyDecay(
+        env, seed, er, er, cfg.EPS_END, cfg.DECAY_STEPS, dqn)
     buffer = ReplayBuffer(seed=seed)
     agent = DDQNAgent(dqn, eval_net, policy, buffer)
     return env, agent, 0, 0
@@ -87,7 +89,8 @@ def train(
     writer = SummaryWriter(log_dir=SAVE_DIR, comment=str(seed))
     writer.add_graph(
         agent.actor_model,
-        torch.tensor(env.reset()).unsqueeze(0).float().to(agent.actor_model.device),
+        torch.tensor(env.reset()).unsqueeze(
+            0).float().to(agent.actor_model.device),
     )
 
     losses = []
@@ -122,7 +125,8 @@ def train(
             rewards.clear()
 
         if (i + 1) % 10 == 0:
-            buffer_dir = os.path.join(SAVE_DIR, "buffer_seed_" + str(seed) + ".pkl")
+            buffer_dir = os.path.join(
+                SAVE_DIR, "buffer_seed_" + str(seed) + ".pkl")
             save_checkpoint(
                 agent.actor_model,
                 "Duelingddqn_seed_" + str(seed) + "_EPISODE_" + str(i + 1),
