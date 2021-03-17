@@ -18,7 +18,7 @@ Our agent implements the following features:
  * Prioritized Replay Buffer
  * Decaying  ε-greedy exploration
 
-For pretrained checkpoints, their training and evaluation, click [here](https://github.com/Dschimm/rl-project/blob/main/models/).
+**For pretrained checkpoints, their training and evaluation, click [here](https://github.com/Dschimm/rl-project/blob/main/models/).**
 
 ## Installation
 
