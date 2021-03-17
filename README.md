@@ -89,6 +89,7 @@ Evaluate all checkpoints from exp42:
 $ /home/dentarthur/rl-project> python src/main.py -e --dir exp42
 ```
 
+Note: This will create tensorboard plots and not print anything!
 
 ## Authors
 
