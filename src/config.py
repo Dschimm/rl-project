@@ -20,3 +20,5 @@ BUFFER_SIZE = 1e5
 # Pre-processing
 FRAMESTACK = 4
 RESIZE_SHAPE = 64
+
+SEEDS = [42, 366, 533, 1337]

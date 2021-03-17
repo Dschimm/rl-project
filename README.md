@@ -12,12 +12,13 @@ To improve learning, we pre-processed the states with:
 
 Additionally, we implemented [macro-actions](https://github.com/Dschimm/rl-project/blob/main/src/gym_utils.py#L15).
 
-Our agent implements with the following features:
- * DQN
+Our agent implements the following features:
+ * DQN / DuelingDQN
  * DoubleDQN
- * DuelingDQN
  * Prioritized Replay Buffer
  * Decaying  ε-greedy exploration
+
+For pretrained checkpoints, their training and evaluation, click [here](https://github.com/Dschimm/rl-project/blob/main/models/).
 
 ## Installation
 
@@ -56,6 +57,7 @@ optional arguments:
   -h, --help         show this help message and exit
   -p                 Play mode. Displays one episode using given weights.
   -d                 Devbox mode. Uses pyvirtualdisplay.
+  -e                 Evaluation mode. Evaluate all checkpoints in given --dir option.
   --weights WEIGHTS  pytorch checkpoint file to load.
   --dir DIR          Location relative to models/ for saving checkpoints, buffer and tensorboard.
   --seed SEED        Random seed.
@@ -71,7 +73,7 @@ $ /home/dentarthur/rl-project> python src/main.py -d --seed 42 --dir exp42
 Resume above training:
 
 ```
-$ /home/dentarthur/rl-project> python src/main.py -d  --dir exp42 --weights models/exp42/latest.pt
+$ /home/dentarthur/rl-project> python src/main.py -d --dir exp42 --weights models/exp42/latest.pt
 ```
 
 Let a pretrained agent play:
@@ -79,6 +81,12 @@ Let a pretrained agent play:
 
 ```
 $ /home/dentarthur/rl-project> python src/main.py -p --weights models/exp42/latest.pt
+```
+
+Evaluate all checkpoints from exp42:
+
+```
+$ /home/dentarthur/rl-project> python src/main.py -e --dir exp42
 ```
 
 
