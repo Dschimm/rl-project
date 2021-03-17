@@ -44,7 +44,14 @@ Note: Over time, epsilon decays. The car will therefore be faster and moves forw
 
 ## Evaluation of checkpoints
 
-<img src="https://github.com/Dschimm/rl-project/blob/main/images/eval.svg" width="600" height="1500" align="left">
+This plot show the average reward played over all 4 seeds gained in 10 episodes.
+As you can see, the performance is hardly influenced by seed or buffer implementation.
+
+
+<img src="https://github.com/Dschimm/rl-project/blob/main/images/eval.svg" width="600" height="1200" align="left">
+</br></br></br></br></br></br></br></br></br></br>
+</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
 
 
 ## Conclusion
